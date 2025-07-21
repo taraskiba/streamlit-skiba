@@ -1,8 +1,8 @@
 --find-links=https://girder.github.io/large_image_wheels GDAL
+ee
+geemap==0.35.3
 geopandas
 leafmap
 owslib
 requests
 streamlit
-geemap==0.35.3
-ee
