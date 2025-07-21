@@ -3,7 +3,6 @@ import requests
 import pandas as pd
 import numpy as np
 import ee
-import skiba
 import geemap as gm
 import geopandas as gpd
 import io
