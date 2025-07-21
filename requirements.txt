@@ -2,4 +2,9 @@
 geopandas
 leafmap
 owslib
+requests
 streamlit
+skiba
+io
+geemap
+ee

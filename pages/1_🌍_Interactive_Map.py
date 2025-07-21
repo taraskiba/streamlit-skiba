@@ -1,32 +1,23 @@
 import streamlit as st
 import leafmap.foliumap as leafmap
+import skiba.interactive as skiba
 
+# Customize the sidebar
 markdown = """
-A Streamlit map template
-<https://github.com/opengeos/streamlit-map-template>
+Web App for the Skiba package
+========================
+<https://github.com/taraskiba/streamlit-skiba>
 """
 
 st.sidebar.title("About")
 st.sidebar.info(markdown)
-logo = "https://i.imgur.com/UbOXYAU.png"
+logo = "https://github.com/taraskiba/skiba/blob/a98750c413bd869324c551e7910886b0cd2d2d77/docs/files/logo.png?raw=true"
 st.sidebar.image(logo)
 
 
 st.title("Interactive Map")
 
-col1, col2 = st.columns([4, 1])
-options = list(leafmap.basemaps.keys())
-index = options.index("OpenTopoMap")
-
-with col2:
-
-    basemap = st.selectbox("Select a basemap:", options, index)
-
-
-with col1:
-
-    m = leafmap.Map(
-        locate_control=True, latlon_control=True, draw_export=True, minimap_control=True
-    )
-    m.add_basemap(basemap)
-    m.to_streamlit(height=700)
+with st.expander("See source code"):
+    with st.echo():
+        m = skiba.Map()
+m.to_streamlit(height=700)
