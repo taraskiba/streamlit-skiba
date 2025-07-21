@@ -8,6 +8,7 @@ import ee
 def ee_authenticate(token_name="EARTHENGINE_TOKEN"):
     ee.initalize(token_name=token_name)
 
+
 markdown = """
 A Streamlit map template
 <https://github.com/opengeos/streamlit-map-template>
@@ -36,4 +37,3 @@ with col1:
     )
     m.add_basemap(basemap)
     m.to_streamlit(height=700)
-
