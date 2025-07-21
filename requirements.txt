@@ -4,5 +4,5 @@ leafmap
 owslib
 requests
 streamlit
-geemap
+geemap==0.35.3
 ee
