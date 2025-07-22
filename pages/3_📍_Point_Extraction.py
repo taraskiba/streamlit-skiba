@@ -7,11 +7,14 @@ import geemap as gm
 import geopandas as gpd
 import io
 
-#ee.Authenticate()  # Authenticate with Google Earth Engine
+# When running locally, use the following lines to authenticate and initialize Earth Engine
+#ee.Authenticate()  # Authenticate with Google Earth Engine when using locally
 #ee.Initialize(project="ee-forestplotvariables")  # Initialize the Earth Engine API
 
-gm.ee_initialize()  # Initialize the Earth Engine API with token
+# When deploying onto remote server, run the following
 
+st.secrets["EARTHENGINE_TOKEN"]
+gm.ee_initialize()  # Initialize the Earth Engine API with token
 m = gm.Map()
 
 st.set_page_config(page_title='Extract GEE Data from Coordinates', layout='wide')
