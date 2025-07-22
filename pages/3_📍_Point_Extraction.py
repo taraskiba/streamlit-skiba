@@ -10,8 +10,7 @@ import io
 #ee.Authenticate()  # Authenticate with Google Earth Engine
 #ee.Initialize(project="ee-forestplotvariables")  # Initialize the Earth Engine API
 
-token = st.secrets["EARTHENGINE_TOKEN"]
-gm.ee_initialize(token = token)  # Initialize the Earth Engine API with token
+gm.ee_initialize()  # Initialize the Earth Engine API with token
 
 m = gm.Map()
 
