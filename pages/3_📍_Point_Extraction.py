@@ -15,8 +15,8 @@ import io
 
 
 gm.ee_initialize()  # Initialize the Earth Engine API with token
-ee.authenticate()  
-ee.initialize(project="ee-forestplotvariables")  
+ee.Authenticate()  # Authenticate with Google Earth Engine using the secret.json file
+ee.Initialize(project="ee-forestplotvariables")  
 # Beginning of web app development
 st.set_page_config(page_title='Extract GEE Data from Coordinates', layout='wide')
 
