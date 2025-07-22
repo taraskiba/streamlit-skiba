@@ -7,10 +7,13 @@ import geemap as gm
 import geopandas as gpd
 import io
 
-gm.ee_initialize()
-# ee.Initialize(project="ee-forestplotvariables")
-# os.environ["EARTHENGINE_TOKEN"] == st.secrets["EARTHENGINE_TOKEN"]
+#ee.Authenticate()  # Authenticate with Google Earth Engine
+#ee.Initialize(project="ee-forestplotvariables")  # Initialize the Earth Engine API
 
+token = st.secrets["EARTHENGINE_TOKEN"]
+gm.ee_initialize(token = token)
+
+m = gm.Map()
 
 st.set_page_config(page_title='Extract GEE Data from Coordinates', layout='wide')
 
