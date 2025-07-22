@@ -1,6 +1,6 @@
 import streamlit as st
 import leafmap.foliumap as leafmap
-import skiba.interactive as skiba
+
 
 # Customize the sidebar
 markdown = """
