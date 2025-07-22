@@ -4,7 +4,7 @@ leafmap
 owslib
 requests
 streamlit
-geemap==0.35.3
+geemap
 ee
 setuptools
 google-auth

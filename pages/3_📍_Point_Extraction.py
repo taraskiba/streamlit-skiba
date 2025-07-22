@@ -12,7 +12,8 @@ import io
 #ee.Initialize(project="ee-forestplotvariables")  # Initialize the Earth Engine API
 
 # When deploying onto remote server, run the following
-gm.Map()  # Initialize the Earth Engine API with token 
+gm.ee_initialize()  # Initialize the Earth Engine API with token 
+
 # Beginning of web app development
 st.set_page_config(page_title='Extract GEE Data from Coordinates', layout='wide')
 
