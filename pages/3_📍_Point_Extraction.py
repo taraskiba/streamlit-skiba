@@ -13,7 +13,7 @@ import io
 
 # When deploying onto remote server, run the following
 
-st.secrets["EARTHENGINE_TOKEN"]
+
 gm.ee_initialize()  # Initialize the Earth Engine API with token
 m = gm.Map()
 
