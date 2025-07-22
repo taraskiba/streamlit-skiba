@@ -7,3 +7,4 @@ streamlit
 geemap==0.35.3
 ee
 setuptools
+google.oath2
