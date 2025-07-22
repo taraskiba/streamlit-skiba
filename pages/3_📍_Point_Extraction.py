@@ -7,9 +7,8 @@ import geemap as gm
 import geopandas as gpd
 import io
 
-
-ee.Authenticate()
-ee.Initialize(project="ee-forestplotvariables")
+gm.ee_initialize()
+# ee.Initialize(project="ee-forestplotvariables")
 # os.environ["EARTHENGINE_TOKEN"] == st.secrets["EARTHENGINE_TOKEN"]
 
 
