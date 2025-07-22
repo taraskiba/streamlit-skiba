@@ -11,7 +11,7 @@ import io
 #ee.Initialize(project="ee-forestplotvariables")  # Initialize the Earth Engine API
 
 token = st.secrets["EARTHENGINE_TOKEN"]
-gm.ee_initialize(token = token, project="ee-forestplotvariables")  # Initialize the Earth Engine API with token
+gm.ee_initialize(token = token)  # Initialize the Earth Engine API with token
 
 m = gm.Map()
 
