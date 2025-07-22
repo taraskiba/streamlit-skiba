@@ -15,7 +15,6 @@ import io
 
 
 gm.ee_initialize()  # Initialize the Earth Engine API with token
-m = gm.Map()
 
 st.set_page_config(page_title='Extract GEE Data from Coordinates', layout='wide')
 
