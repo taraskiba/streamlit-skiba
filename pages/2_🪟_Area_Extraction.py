@@ -14,6 +14,8 @@ with st.echo():
     import geemap.foliumap as geemap
     import ee
 
+    ee.Initialize(project="ee-forestplotvariables")  
+    
     m = geemap.Map()
     dem = ee.Image('USGS/SRTMGL1_003')
 
