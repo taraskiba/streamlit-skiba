@@ -9,3 +9,4 @@ ee
 setuptools
 google-auth
 streamlit_folium
+google-auth-oauthlib

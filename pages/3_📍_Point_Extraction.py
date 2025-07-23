@@ -6,15 +6,35 @@ import ee
 import geemap as gm
 import geopandas as gpd
 import io
+from google.oauth2 import service_account
+from ee import oauth
+import json
 
 # When running locally, use the following lines to authenticate and initialize Earth Engine
 #ee.Authenticate()  # Authenticate with Google Earth Engine when using locally
 #ee.Initialize(project="ee-forestplotvariables")  # Initialize the Earth Engine API
 
 # When deploying onto remote server, run the following
-ee_token = st.secrets["EARTHENGINE_TOKEN"]
-gm.ee_initialize(token_name = ee_token, auth_mode = 'cloud')  # Initialize the Earth Engine API with token
-# Initialize the Earth Engine API with token
+def initialize_ee():
+    service_account_info = st.secrets["EARTHENGINE_TOKEN"]
+    credentials = service_account.Credentials.from_service_account_info(service_account_info)
+    ee.Initialize(credentials)
+initialize_ee()  # Initialize the Earth Engine API with token
+
+def ee_initialize(force_use_service_account=False):
+    if force_use_service_account or "json_data" in st.secrets:
+        json_credentials = st.secrets["json_data"]
+        credentials_dict = json.loads(json_credentials)
+        if 'client_email' not in credentials_dict:
+            raise ValueError("Service account info is missing 'client_email' field.")
+        credentials = service_account.Credentials.from_service_account_info(
+            credentials_dict, scopes=oauth.SCOPES
+        )
+        ee.Initialize(credentials)
+    else:
+        ee.Initialize()
+# Initialize GEE
+ee_initialize(force_use_service_account=True)
 
 # Beginning of web app development
 st.set_page_config(page_title='Extract GEE Data from Coordinates', layout='wide')
