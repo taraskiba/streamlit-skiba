@@ -15,17 +15,17 @@ import json
 #ee.Initialize(project="ee-forestplotvariables")  # Initialize the Earth Engine API
 
 # When deploying onto remote server, run the following
-@st.cache_resource
-def initialize_ee():
-    service_account_info = st.secrets["EARTHENGINE_TOKEN"]
-    credentials = service_account.Credentials.from_service_account_info(service_account_info)
-    ee.Initialize(credentials)
-initialize_ee()  # Initialize the Earth Engine API with token
+# @st.cache_resource
+# def initialize_ee():
+#     service_account_info = st.secrets["EARTHENGINE_TOKEN"]
+#     credentials = service_account.Credentials.from_service_account_info(service_account_info)
+#     ee.Initialize(credentials)
+# initialize_ee()  # Initialize the Earth Engine API with token
 
 @st.cache_resource
 def ee_initialize(force_use_service_account=False):
-    if force_use_service_account or "json_data" in st.secrets:
-        json_credentials = st.secrets["json_data"]
+    if force_use_service_account or "EARTHENGINE_TOKEN" in st.secrets:
+        json_credentials = st.secrets["EARTHENGINE_TOKEN"]
         credentials_dict = json.loads(json_credentials)
         if 'client_email' not in credentials_dict:
             raise ValueError("Service account info is missing 'client_email' field.")
