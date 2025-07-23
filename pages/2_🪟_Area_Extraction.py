@@ -1,39 +1,29 @@
 import streamlit as st
-import leafmap.foliumap as leafmap
-
+from streamlit_folium import folium_static
+import geemap.eefolium as geemap
 import ee
 
+# os.environ["EARTHENGINE_TOKEN"] == st.secrets["EARTHENGINE_TOKEN"]
 
-# @st.cache_data
-# def ee_authenticate(token_name="EARTHENGINE_TOKEN"):
-#     ee.initalize(token_name=token_name)
+"# streamlit geemap demo"
+st.markdown('Source code: <https://github.com/giswqs/geemap-streamlit/blob/main/geemap_app.py>')
 
-# markdown = """
-# A Streamlit map template
-# <https://github.com/opengeos/streamlit-map-template>
-# """
+with st.echo():
+    import streamlit as st
+    from streamlit_folium import folium_static
+    import geemap.eefolium as geemap
+    import ee
 
-# st.sidebar.title("About")
-# st.sidebar.info(markdown)
-# logo = "https://github.com/taraskiba/skiba/blob/a98750c413bd869324c551e7910886b0cd2d2d77/docs/files/logo.png?raw=true"
-# st.sidebar.image(logo)
+    m = geemap.Map()
+    dem = ee.Image('USGS/SRTMGL1_003')
 
+    vis_params = {
+    'min': 0,
+    'max': 4000,
+    'palette': ['006633', 'E5FFCC', '662A00', 'D8D8D8', 'F5F5F5']}
 
-# st.title("Extract GEE Info from GeoJSON files")
+    m.addLayer(dem, vis_params, 'SRTM DEM', True, 1)
+    m.addLayerControl()
 
-# row1, row2, row3, row4 = st.rows([4, 1])
-
-
-# with col2:
-
-#     basemap = st.selectbox("Select a basemap:", options, index)
-
-
-# with col1:
-
-#     m = leafmap.Map(
-#         locate_control=True, latlon_control=True, draw_export=True, minimap_control=True
-#     )
-#     m.add_basemap(basemap)
-#     m.to_streamlit(height=700)
-
+    # call to render Folium map in Streamlit
+    folium_static(m)

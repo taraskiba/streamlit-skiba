@@ -24,10 +24,10 @@ Web App for the Skiba package
 <https://github.com/taraskiba/streamlit-skiba>
 """
 
-# st.sidebar.title("About")
-# st.sidebar.info(markdown)
-# logo = "https://github.com/taraskiba/skiba/blob/a98750c413bd869324c551e7910886b0cd2d2d77/docs/files/logo.png?raw=true"
-# st.sidebar.image(logo)
+st.sidebar.title("About")
+st.sidebar.info(markdown)
+logo = "https://github.com/taraskiba/skiba/blob/a98750c413bd869324c551e7910886b0cd2d2d77/docs/files/logo.png?raw=true"
+st.sidebar.image(logo)
 
 st.title("Extract GEE Info from Coordinates")
 st.header("Extract Data from Google Earth Engine (GEE) using Coordinates in a CSV File.")
