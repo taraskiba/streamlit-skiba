@@ -17,7 +17,7 @@ with st.echo():
     import ee
 
     ee_token = st.secrets["EARTHENGINE_TOKEN"]
-    gm.ee_initialize(token_name = ee_token) 
+    gm.ee_initialize(token_name = ee_token, auth_mode = 'cloud')  # Initialize the Earth Engine API with token
 
     m = geemap.Map()
     dem = ee.Image('USGS/SRTMGL1_003')
