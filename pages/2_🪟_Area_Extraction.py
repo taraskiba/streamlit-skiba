@@ -1,9 +1,11 @@
 import streamlit as st
 from streamlit_folium import folium_static
+import geemap as gm
 import geemap.foliumap as geemap
 import ee
 
-# os.environ["EARTHENGINE_TOKEN"] == st.secrets["EARTHENGINE_TOKEN"]
+ee_token = st.secrets["EARTHENGINE_TOKEN"]
+gm.ee_initialize(token_name = ee_token)  # Initialize the Earth Engine API with token
 
 "# streamlit geemap demo"
 st.markdown('Source code: <https://github.com/giswqs/geemap-streamlit/blob/main/geemap_app.py>')
@@ -15,7 +17,8 @@ with st.echo():
     import ee
 
     ee.Initialize(project="ee-forestplotvariables")  
-    
+    ee.Authenticate()
+
     m = geemap.Map()
     dem = ee.Image('USGS/SRTMGL1_003')
 
