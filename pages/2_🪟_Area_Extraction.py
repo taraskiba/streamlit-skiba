@@ -16,8 +16,8 @@ with st.echo():
     import geemap.foliumap as geemap
     import ee
 
-    ee.Initialize(project="ee-forestplotvariables")  
-    ee.Authenticate()
+    ee_token = st.secrets["EARTHENGINE_TOKEN"]
+    gm.ee_initialize(token_name = ee_token) 
 
     m = geemap.Map()
     dem = ee.Image('USGS/SRTMGL1_003')
