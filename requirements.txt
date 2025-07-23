@@ -8,3 +8,4 @@ geemap
 ee
 setuptools
 google-auth
+streamlit_folium
