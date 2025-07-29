@@ -22,22 +22,23 @@ st.title("Streamlit for the _skiba_ Package")
 st.header("A streamlit app version of the skiba package")
 
 markdown = """
-This app is a based on the _skiba_ package and allows users to extract data from Google Earth Engine (GEE) using on a point or area scale.  This package pulls the average pixel value for a specified area for the entire GEE dataset or optional time peroid. Consult the GEE page for the dataset of interest to view the pixel size and time period. \n
+This app is based on the _skiba_ package and allows users to extract data from Google Earth Engine (GEE) using on a point or area scale.  This package pulls the average pixel value for a specified area for the entire GEE dataset or optional time peroid. Consult the GEE page for the dataset of interest to view the pixel size and time period. \n
 Due to some of the _skiba_ package's dependencies not being available in the Streamlit environment, this app is not built with the skiba package. 
 Instead, it is built to perform the same as queries from Google Earth Engine as _skiba_ does in a Streamlit environment. Many portions of the streamlit version has code pulled directly from the _skiba_ package, but it is not a direct copy of the package.
 You can compare the _skiba_ package's GitHub page ([_skiba_ on GitHub](https://github.com/taraskiba/skiba.git)) with this app's GitHub page ([_streamlit-skiba_ on GitHub](https://github.com/taraskiba/streamlit-skiba)) for similarities and differences.\n
-Note: carefully read over instructions for each section to ensure formatting and file types used are correct. \n
+**Note:** carefully read over instructions for each section to ensure formatting and file types used are correct. \n
 
-<center>*Please be considerate of your energy usage when using this app, as it is hosted on a server and uses Google Earth Engine's resources which contribute significant amounts of carbon. Please run only neccessary queries to minimize your carbon footprint.* \n
-_“The greatest threat to our planet is the belief that someone else will save it.”_ — Robert Swan \n
-Cheers.\n</center>
+*Please be considerate of your energy usage when using this app, as it is hosted on a server and uses Google Earth Engine's resources which contribute significant amounts of carbon. Please run only neccessary queries to minimize your carbon footprint.* \n
 """
-
 st.markdown(markdown)
+st.subheader("**_“The greatest threat to our planet is the belief that someone else will save it.”_**")
+st.markdown("— Robert Swan ☯ Cheers.")
+
 
 markdown = """
 [tskiba@vols.utk.edu](mailto:tskiba@vols.utk.edu?subject=Skiba%20Package)
-for any problems or questions.
+for any problems or questions. \n
+Google Earth Engine may need to be reauthenticated from time to time.
 """
 
 st.subheader("Email me")
