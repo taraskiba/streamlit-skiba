@@ -25,6 +25,8 @@ import json
 @st.cache_resource
 def ee_initialize(force_use_service_account=False):
     if force_use_service_account or "EARTHENGINE_TOKEN" in st.secrets:
+        ### Make sure to replace \n with \\n in updated secrets
+        # to ensure valid JSON format
         json_credentials = st.secrets["EARTHENGINE_TOKEN"]
         json_credentials = json_credentials.replace("'", "\"")  # Ensure valid JSON format
         credentials_dict = json.loads(json_credentials)
@@ -166,7 +168,9 @@ with col1:
         "Upload a CSV file. The CSV file should contain latitude and longitude columns labeled as LAT and LONG, with a indexing column (no specific column name necessary). Ensure the file is formatted correctly for processing.",
         type=["csv"],
         help="Double check that your CSV file is formatted correctly with LAT and LONG columns.")
-
+    st.markdown("""
+                [example CSV file](https://raw.githubusercontent.com/taraskiba/streamlit-skiba/refs/heads/main/sample_data/coordinate-point-formatting.csv)
+                """)
 with col2:
     url = "https://raw.githubusercontent.com/opengeos/geospatial-data-catalogs/master/gee_catalog.json"
 
