@@ -28,9 +28,9 @@ Instead, it is built to perform the same as queries from Google Earth Engine as 
 You can compare the _skiba_ package's GitHub page ([_skiba_ on GitHub](https://github.com/taraskiba/skiba.git)) with this app's GitHub page ([_streamlit-skiba_ on GitHub](https://github.com/taraskiba/streamlit-skiba)) for similarities and differences.\n
 Note: carefully read over instructions for each section to ensure formatting and file types used are correct. \n
 
-<p style="text-align: center;">*Please be considerate of your energy usage when using this app, as it is hosted on a server and uses Google Earth Engine's resources which contribute significant amounts of carbon. Please run only neccessary queries to minimize your carbon footprint.* \n
+<center>*Please be considerate of your energy usage when using this app, as it is hosted on a server and uses Google Earth Engine's resources which contribute significant amounts of carbon. Please run only neccessary queries to minimize your carbon footprint.* \n
 _“The greatest threat to our planet is the belief that someone else will save it.”_ — Robert Swan \n
-Cheers.\n</p>
+Cheers.\n</center>
 """
 
 st.markdown(markdown)
