@@ -42,7 +42,7 @@ def ee_initialize(force_use_service_account=False):
 ee_initialize(force_use_service_account=True)
 
 
-@st.cache_data(hash_funcs={gpd.geodataframe.GeoDataFrame: lambda gdf: gdf.geometry.wkb})
+@st.cache_data(hash_funcs={gpd.geodataframe.GeoDataFrame: lambda gdf: gdf.geometry})
 def extract_median_values(data, geedata, start_date, end_date, **kwargs):
     """
     Extracts median values from a GEE dataset for the given geometry.
@@ -91,7 +91,7 @@ def extract_median_values(data, geedata, start_date, end_date, **kwargs):
 
     return sampled_data
 
-@st.cache_data(hash_funcs={gpd.geodataframe.GeoDataFrame: lambda gdf: gdf.geometry.wkb})
+@st.cache_data(hash_funcs={gpd.geodataframe.GeoDataFrame: lambda gdf: gdf.geometry})
 def load_gee_as_image(dataset_id, start_date=None, end_date=None, **kwargs):
     """
     Loads any GEE dataset (Image, ImageCollection, FeatureCollection) as an ee.Image.
