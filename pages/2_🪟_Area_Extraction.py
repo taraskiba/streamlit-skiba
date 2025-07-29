@@ -209,7 +209,7 @@ with col3:
     if st.button("Run Query"):
         if uploaded_file is not None:
             file_info = uploaded_file.getvalue()
-            points = pd.read_file(io.BytesIO(file_info))
+            points = gpd.read_file(io.BytesIO(file_info))
 
             if not geedata:
                 st.error("Please ensure all fields are filled out correctly.")
