@@ -22,11 +22,7 @@ import json
 #     ee.Initialize(credentials)
 # initialize_ee()  # Initialize the Earth Engine API with token
 
-def hash_geodataframe(gdf):
-    # This might be slow for very large GeoDataFrames
-    return hash(gdf.to_json()) 
-
-@st.cache_resource(hash_funcs={gpd.GeoDataFrame: hash_geodataframe})
+@st.cache_resource
 def ee_initialize(force_use_service_account=False):
     if force_use_service_account or "EARTHENGINE_TOKEN" in st.secrets:
         ### Make sure to replace \n with \\n in updated secrets
@@ -45,8 +41,11 @@ def ee_initialize(force_use_service_account=False):
 # Initialize GEE
 ee_initialize(force_use_service_account=True)
 
+def hash_geodataframe(gdf):
+    # This might be slow for very large GeoDataFrames
+    return hash(gdf.to_json()) 
 
-@st.cache_data(hash_funcs={gpd.geodataframe.GeoDataFrame: lambda gdf: gdf.geometry})
+@st.cache_data(hash_funcs={gpd.GeoDataFrame: hash_geodataframe})
 def extract_median_values(data, geedata, start_date, end_date, **kwargs):
     """
     Extracts median values from a GEE dataset for the given geometry.
