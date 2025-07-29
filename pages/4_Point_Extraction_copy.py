@@ -11,8 +11,8 @@ from ee import oauth
 import json
 
 # When running locally, use the following lines to authenticate and initialize Earth Engine
-#ee.Authenticate()  # Authenticate with Google Earth Engine when using locally
-#ee.Initialize(project="ee-forestplotvariables")  # Initialize the Earth Engine API
+ee.Authenticate()  # Authenticate with Google Earth Engine when using locally
+ee.Initialize(project="ee-forestplotvariables")  # Initialize the Earth Engine API
 
 # When deploying onto remote server, run the following
 # @st.cache_resource
@@ -22,22 +22,21 @@ import json
 #     ee.Initialize(credentials)
 # initialize_ee()  # Initialize the Earth Engine API with token
 
-@st.cache_resource
-def ee_initialize(force_use_service_account=False):
-    if force_use_service_account or "EARTHENGINE_TOKEN" in st.secrets:
-        json_credentials = st.secrets["EARTHENGINE_TOKEN"]
-        json_credentials = json_credentials.replace("'", "\"")  # Ensure valid JSON format
-        credentials_dict = json.loads(json_credentials)
-        if 'client_email' not in credentials_dict:
-            raise ValueError("Service account info is missing 'client_email' field.")
-        credentials = service_account.Credentials.from_service_account_info(
-            credentials_dict, scopes=oauth.SCOPES
-        )
-        ee.Initialize(credentials)
-    else:
-        ee.Initialize()
-# Initialize GEE
-ee_initialize(force_use_service_account=True)
+# @st.cache_resource
+# def ee_initialize(force_use_service_account=False):
+#     if force_use_service_account or "EARTHENGINE_TOKEN" in st.secrets:
+#         json_credentials = st.secrets["EARTHENGINE_TOKEN"]
+#         credentials_dict = json.loads(json_credentials)
+#         if 'client_email' not in credentials_dict:
+#             raise ValueError("Service account info is missing 'client_email' field.")
+#         credentials = service_account.Credentials.from_service_account_info(
+#             credentials_dict, scopes=oauth.SCOPES
+#         )
+#         ee.Initialize(credentials)
+#     else:
+#         ee.Initialize()
+# # Initialize GEE
+# ee_initialize(force_use_service_account=True)
 
 # Beginning of web app development
 st.set_page_config(page_title='Extract GEE Data from Coordinates', layout='wide')
