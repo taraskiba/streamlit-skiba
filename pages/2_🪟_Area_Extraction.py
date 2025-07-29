@@ -22,7 +22,11 @@ import json
 #     ee.Initialize(credentials)
 # initialize_ee()  # Initialize the Earth Engine API with token
 
-@st.cache_resource
+def hash_geodataframe(gdf):
+    # This might be slow for very large GeoDataFrames
+    return hash(gdf.to_json()) 
+
+@st.cache_resource(hash_funcs={gpd.GeoDataFrame: hash_geodataframe})
 def ee_initialize(force_use_service_account=False):
     if force_use_service_account or "EARTHENGINE_TOKEN" in st.secrets:
         ### Make sure to replace \n with \\n in updated secrets
@@ -91,7 +95,7 @@ def extract_median_values(data, geedata, start_date, end_date, **kwargs):
 
     return sampled_data
 
-@st.cache_data(hash_funcs={gpd.geodataframe.GeoDataFrame: lambda gdf: gdf.geometry})
+@st.cache_data
 def load_gee_as_image(dataset_id, start_date=None, end_date=None, **kwargs):
     """
     Loads any GEE dataset (Image, ImageCollection, FeatureCollection) as an ee.Image.
