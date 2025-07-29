@@ -98,8 +98,8 @@ st.sidebar.info(markdown)
 logo = "https://github.com/taraskiba/skiba/blob/a98750c413bd869324c551e7910886b0cd2d2d77/docs/files/logo.png?raw=true"
 st.sidebar.image(logo)
 
-st.title("Extract Google Earth Engine Data from Coordinates")
-st.header("Lat-Long Coordinate-based Approach to Retrieving GEE Data.")
+st.title("Buffer Coordinates to Hide Sensitive Location Data")
+st.header("Prelimiary Step to the Area Extraction Module.")
 
 # Sidebar filters - # nested sidebar title when duplicated under main one
 # st.sidebar.title('Filters') 
@@ -122,6 +122,7 @@ with col1:
                 [Example file](https://raw.githubusercontent.com/taraskiba/streamlit-skiba/refs/heads/main/sample_data/coordinate-point-formatting.csv)
                 """)
 with col2:
+    st.write("Optional: check resolution of Google Earth Engine dataset to determine appropriate buffer area.")
     url = "https://raw.githubusercontent.com/opengeos/geospatial-data-catalogs/master/gee_catalog.json"
 
     response = requests.get(url)
