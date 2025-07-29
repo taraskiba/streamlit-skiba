@@ -41,31 +41,6 @@ def ee_initialize(force_use_service_account=False):
 # Initialize GEE
 ee_initialize(force_use_service_account=True)
 
-# Beginning of web app development
-st.set_page_config(page_title='Extract GEE Data from Coordinates', layout='wide')
-
-# Customize the sidebar
-markdown = """
-Web App for the Skiba package
-========================
-<https://github.com/taraskiba/streamlit-skiba>
-"""
-
-st.sidebar.title("About")
-st.sidebar.info(markdown)
-logo = "https://github.com/taraskiba/skiba/blob/a98750c413bd869324c551e7910886b0cd2d2d77/docs/files/logo.png?raw=true"
-st.sidebar.image(logo)
-
-st.title("Extract Google Earth Engine Data from Coordinates")
-st.header("Lat-Long Coordinate-based Approach to Retrieving GEE Data.")
-
-# Sidebar filters - # nested sidebar title when duplicated under main one
-# st.sidebar.title('Filters') 
-# regions = st.sidebar.multiselect('Select Region', df['Region'].unique(), default=df['Region'].unique())
-# products = st.sidebar.multiselect('Select Product', df['Product'].unique(), default=df['Product'].unique())
-
-# Filter data
-# filtered_df = df[(df['Region'].isin(regions)) & (df['Product'].isin(products))]
 
 @st.cache_data 
 def get_coordinate_data(data, geedata, start_date, end_date, **kwargs):
@@ -160,6 +135,32 @@ def load_gee_as_image(dataset_id, start_date=None, end_date=None, **kwargs):
             "Dataset ID is not a valid Image, ImageCollection, or FeatureCollection."
         )
 
+# Beginning of web app development
+st.set_page_config(page_title='Extract GEE Data from Coordinates', layout='wide')
+
+# Customize the sidebar
+markdown = """
+Web App for the Skiba package
+========================
+<https://github.com/taraskiba/streamlit-skiba>
+"""
+
+st.sidebar.title("About")
+st.sidebar.info(markdown)
+logo = "https://github.com/taraskiba/skiba/blob/a98750c413bd869324c551e7910886b0cd2d2d77/docs/files/logo.png?raw=true"
+st.sidebar.image(logo)
+
+st.title("Extract Google Earth Engine Data from Coordinates")
+st.header("Lat-Long Coordinate-based Approach to Retrieving GEE Data.")
+
+# Sidebar filters - # nested sidebar title when duplicated under main one
+# st.sidebar.title('Filters') 
+# regions = st.sidebar.multiselect('Select Region', df['Region'].unique(), default=df['Region'].unique())
+# products = st.sidebar.multiselect('Select Product', df['Product'].unique(), default=df['Product'].unique())
+
+# Filter data
+# filtered_df = df[(df['Region'].isin(regions)) & (df['Product'].isin(products))]
+
 # Top row
 col1, col2 = st.columns(2)
 
@@ -170,7 +171,7 @@ with col1:
         help="Double check that your CSV file is formatted correctly with LAT and LONG columns.")
     st.markdown("""
                 The CSV file should contain latitude and longitude columns labeled as LAT and LONG, with a indexing column (no specific column name necessary). Ensure the file is formatted correctly for processing. \n
-                [Example coordinates file](https://raw.githubusercontent.com/taraskiba/streamlit-skiba/refs/heads/main/sample_data/coordinate-point-formatting.csv)
+                [Example file](https://raw.githubusercontent.com/taraskiba/streamlit-skiba/refs/heads/main/sample_data/coordinate-point-formatting.csv)
                 """)
 with col2:
     url = "https://raw.githubusercontent.com/opengeos/geospatial-data-catalogs/master/gee_catalog.json"
