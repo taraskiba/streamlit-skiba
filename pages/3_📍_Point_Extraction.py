@@ -56,8 +56,8 @@ st.sidebar.info(markdown)
 logo = "https://github.com/taraskiba/skiba/blob/a98750c413bd869324c551e7910886b0cd2d2d77/docs/files/logo.png?raw=true"
 st.sidebar.image(logo)
 
-st.title("Extract GEE Info from Coordinates")
-st.header("Extract Data from Google Earth Engine (GEE) using Coordinates in a CSV File.")
+st.title("Extract Google Earth Engine Data from Coordinates")
+st.header("Lat-Long Coordinate-based Approach to Retrieving GEE Data.")
 
 # Sidebar filters - # nested sidebar title when duplicated under main one
 # st.sidebar.title('Filters') 
@@ -165,11 +165,11 @@ col1, col2 = st.columns(2)
 
 with col1:
     uploaded_file = st.file_uploader(
-        "Upload a CSV file. The CSV file should contain latitude and longitude columns labeled as LAT and LONG, with a indexing column (no specific column name necessary). Ensure the file is formatted correctly for processing.",
+        "Upload a CSV file.\n The CSV file should contain latitude and longitude columns labeled as LAT and LONG, with a indexing column (no specific column name necessary). Ensure the file is formatted correctly for processing.",
         type=["csv"],
         help="Double check that your CSV file is formatted correctly with LAT and LONG columns.")
     st.markdown("""
-                [example CSV file](https://raw.githubusercontent.com/taraskiba/streamlit-skiba/refs/heads/main/sample_data/coordinate-point-formatting.csv)
+                [Example coordinates file](https://raw.githubusercontent.com/taraskiba/streamlit-skiba/refs/heads/main/sample_data/coordinate-point-formatting.csv)
                 """)
 with col2:
     url = "https://raw.githubusercontent.com/opengeos/geospatial-data-catalogs/master/gee_catalog.json"
