@@ -54,9 +54,27 @@ def get_coordinate_data(data, geedata, start_date, end_date, **kwargs):
         data (str): CSV file contained GEE data.
     """
 
+    lat_cols = ['lat', 'latitude', 'y', 'LAT', 'Latitude', 'Y']
+    lon_cols = ['lon', 'long', 'longitude', 'x', 'LON', 'Longitude', 'Long', 'X']
+
+    def find_column(possible_names, columns):
+            for name in possible_names:
+                if name in columns:
+                    return name
+            # fallback: check case-insensitive match
+            lower_columns = {c.lower(): c for c in columns}
+            for name in possible_names:
+                if name.lower() in lower_columns:
+                    return lower_columns[name.lower()]
+            raise ValueError(f"No matching column found for {possible_names}")
+
+
     # Load data with safety checks
     if isinstance(data, str):
         coordinates = pd.read_csv(data)
+        lat_col = find_column(lat_cols, coordinates.columns)
+        lon_col = find_column(lon_cols, coordinates.columns)
+        coordinates = coordinates[[lat_col, lon_col]].rename(columns={lat_col: 'LAT', lon_col: 'LON'})
         gdf = gpd.GeoDataFrame(
             coordinates,
             geometry=gpd.points_from_xy(coordinates.LON, coordinates.LAT),
@@ -64,13 +82,19 @@ def get_coordinate_data(data, geedata, start_date, end_date, **kwargs):
         )
     elif isinstance(data, pd.DataFrame):
         coordinates = data
+        lat_col = find_column(lat_cols, coordinates.columns)
+        lon_col = find_column(lon_cols, coordinates.columns)
+        coordinates = coordinates[[lat_col, lon_col]].rename(columns={lat_col: 'LAT', lon_col: 'LON'})
         gdf = gpd.GeoDataFrame(
             coordinates,
             geometry=gpd.points_from_xy(coordinates.LON, coordinates.LAT),
             crs="EPSG:4326",  # Directly set CRS during creation
         )
     else:
-        gdf = data.to_crs(epsg=4326)  # Ensure WGS84
+        coordinates = data.to_crs(epsg=4326)  # Ensure WGS84
+        lat_col = find_column(lat_cols, coordinates.columns)
+        lon_col = find_column(lon_cols, coordinates.columns)   
+        gdf = coordinates.rename(columns={lat_col: 'LAT', lon_col: 'LON'})
 
     geojson = gdf.__geo_interface__
     fc = gm.geojson_to_ee(geojson)
