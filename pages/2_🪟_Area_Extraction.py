@@ -176,12 +176,9 @@ col1, col2 = st.columns(2)
 with col1:
     uploaded_file = st.file_uploader(
         "Upload a GeoJSON file.",
-        type=["geojson"],
-        help="Double check that your GeoJSON file is formatted correctly with LAT and LONG columns.")
-    st.markdown("""
-                The CSV file should contain latitude and longitude columns labeled as LAT and LONG, with a indexing column (no specific column name necessary). Ensure the file is formatted correctly for processing. \n
-                [Example file](https://raw.githubusercontent.com/taraskiba/streamlit-skiba/refs/heads/main/sample_data/coordinate-point-formatting.csv)
-                """)
+        type=["geojson"]
+    )
+    
 with col2:
     url = "https://raw.githubusercontent.com/opengeos/geospatial-data-catalogs/master/gee_catalog.json"
 

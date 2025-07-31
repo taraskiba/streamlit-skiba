@@ -191,7 +191,7 @@ col1, col2 = st.columns(2)
 with col1:
     uploaded_file = st.file_uploader(
         "Upload a CSV file.",
-        type=["csv"],
+        type=["csv", "txt", "geojson"],
         help="Double check that your CSV file is formatted correctly with LAT and LONG columns.")
     st.markdown("""
                 The CSV file should contain latitude and longitude columns labeled as LAT and LONG, with a indexing column (no specific column name necessary). Ensure the file is formatted correctly for processing. \n
@@ -227,7 +227,7 @@ with col3:
     if st.button("Run Query"):
         if uploaded_file is not None:
             file_info = uploaded_file.getvalue()
-            points = pd.read_csv(io.BytesIO(file_info))
+            points = gpd.read_file(io.BytesIO(file_info))
 
             if not geedata:
                 st.error("Please ensure all fields are filled out correctly.")
