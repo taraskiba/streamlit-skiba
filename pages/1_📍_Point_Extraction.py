@@ -53,28 +53,10 @@ def get_coordinate_data(data, geedata, start_date, end_date, **kwargs):
     Returns:
         data (str): CSV file contained GEE data.
     """
-
-    lat_cols = ['lat', 'latitude', 'y', 'LAT', 'Latitude', 'Y']
-    lon_cols = ['lon', 'long', 'longitude', 'x', 'LON', 'Longitude', 'Long', 'X']
-
-    def find_column(possible_names, columns):
-            for name in possible_names:
-                if name in columns:
-                    return name
-            # fallback: check case-insensitive match
-            lower_columns = {c.lower(): c for c in columns}
-            for name in possible_names:
-                if name.lower() in lower_columns:
-                    return lower_columns[name.lower()]
-            raise ValueError(f"No matching column found for {possible_names}")
-
-
+    
     # Load data with safety checks
     if isinstance(data, str):
         coordinates = pd.read_csv(data)
-        lat_col = find_column(lat_cols, coordinates.columns)
-        lon_col = find_column(lon_cols, coordinates.columns)
-        coordinates = coordinates[[lat_col, lon_col]].rename(columns={lat_col: 'LAT', lon_col: 'LON'})
         gdf = gpd.GeoDataFrame(
             coordinates,
             geometry=gpd.points_from_xy(coordinates.LON, coordinates.LAT),
@@ -82,19 +64,14 @@ def get_coordinate_data(data, geedata, start_date, end_date, **kwargs):
         )
     elif isinstance(data, pd.DataFrame):
         coordinates = data
-        lat_col = find_column(lat_cols, coordinates.columns)
-        lon_col = find_column(lon_cols, coordinates.columns)
-        coordinates = coordinates[[lat_col, lon_col]].rename(columns={lat_col: 'LAT', lon_col: 'LON'})
         gdf = gpd.GeoDataFrame(
             coordinates,
             geometry=gpd.points_from_xy(coordinates.LON, coordinates.LAT),
             crs="EPSG:4326",  # Directly set CRS during creation
         )
     else:
-        coordinates = data.to_crs(epsg=4326)  # Ensure WGS84
-        lat_col = find_column(lat_cols, coordinates.columns)
-        lon_col = find_column(lon_cols, coordinates.columns)   
-        gdf = coordinates.rename(columns={lat_col: 'LAT', lon_col: 'LON'})
+        gdf = data.to_crs(epsg=4326)  # Ensure WGS84
+        
 
     geojson = gdf.__geo_interface__
     fc = gm.geojson_to_ee(geojson)
@@ -106,7 +83,7 @@ def get_coordinate_data(data, geedata, start_date, end_date, **kwargs):
 
     # Retrieve data from the image using sampleRegions
     sampled_data = gm.extract_values_to_points(fc, geeimage, scale = None)
-
+    print(dataset_id)
     return sampled_data
 
 @st.cache_data
@@ -191,8 +168,8 @@ col1, col2 = st.columns(2)
 with col1:
     uploaded_file = st.file_uploader(
         "Upload a CSV file.",
-        type=["csv", "txt", "geojson"],
-        help="Double check that your CSV file is formatted correctly with LAT and LONG columns.")
+        type=["csv"],
+        help="Double check that your CSV file is formatted correctly with accepted latitude and longitude columns.")
     st.markdown("""
                 The CSV file should contain latitude and longitude columns labeled as LAT and LONG, with a indexing column (no specific column name necessary). Ensure the file is formatted correctly for processing. \n
                 [Example file](https://raw.githubusercontent.com/taraskiba/streamlit-skiba/refs/heads/main/sample_data/coordinate-point-formatting.csv)
@@ -227,7 +204,28 @@ with col3:
     if st.button("Run Query"):
         if uploaded_file is not None:
             file_info = uploaded_file.getvalue()
-            points = gpd.read_file(io.BytesIO(file_info))
+            points = pd.read_csv(io.BytesIO(file_info))
+
+            lat_cols = ['lat', 'latitude', 'y', 'LAT', 'Latitude', 'Y']
+            lon_cols = ['lon', 'long', 'longitude', 'x', 'LON', 'Longitude', 'Long', 'X']
+            id_cols = ['id', 'ID', 'plot_ID', 'plot_id', 'plotID', 'plotId']
+
+            def find_column(possible_names, columns):
+                for name in possible_names:
+                    if name in columns:
+                        return name
+                # fallback: check case-insensitive match
+                lower_columns = {c.lower(): c for c in columns}
+                for name in possible_names:
+                    if name.lower() in lower_columns:
+                        return lower_columns[name.lower()]
+                raise ValueError(f"No matching column found for {possible_names}")
+
+            lat_col = find_column(lat_cols, points.columns)
+            lon_col = find_column(lon_cols, points.columns)
+            id_col = find_column(id_cols, points.columns)
+
+            points = points.rename(columns={lat_col: 'LAT', lon_col: 'LON', id_col: 'plot_ID'})
 
             if not geedata:
                 st.error("Please ensure all fields are filled out correctly.")

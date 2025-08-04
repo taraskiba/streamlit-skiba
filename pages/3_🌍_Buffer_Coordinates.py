@@ -147,6 +147,27 @@ with col2:
             file_info = uploaded_file.getvalue()
             points = pd.read_csv(io.BytesIO(file_info))
 
+            lat_cols = ['lat', 'latitude', 'y', 'LAT', 'Latitude', 'Y']
+            lon_cols = ['lon', 'long', 'longitude', 'x', 'LON', 'Longitude', 'Long', 'X']
+            id_cols = ['id', 'ID', 'plot_ID', 'plot_id', 'plotID', 'plotId']
+
+            def find_column(possible_names, columns):
+                for name in possible_names:
+                    if name in columns:
+                        return name
+                # fallback: check case-insensitive match
+                lower_columns = {c.lower(): c for c in columns}
+                for name in possible_names:
+                    if name.lower() in lower_columns:
+                        return lower_columns[name.lower()]
+                raise ValueError(f"No matching column found for {possible_names}")
+            
+            lat_col = find_column(lat_cols, points.columns)
+            lon_col = find_column(lon_cols, points.columns)
+            id_col = find_column(id_cols, points.columns)
+
+            points = points.rename(columns={lat_col: 'LAT', lon_col: 'LON', id_col: 'plot_ID'})
+        
             if not geedata:
                 st.error("Please ensure all fields are filled out correctly.")
             else:

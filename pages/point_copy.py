@@ -41,45 +41,60 @@ def ee_initialize(force_use_service_account=False):
 # Initialize GEE
 ee_initialize(force_use_service_account=True)
 
-def hash_geodataframe(gdf):
-    # This might be slow for very large GeoDataFrames
-    return hash(gdf.to_json()) 
 
-@st.cache_data(hash_funcs={gpd.GeoDataFrame: hash_geodataframe})
-def extract_median_values(data, geedata, start_date, end_date, **kwargs):
+@st.cache_data 
+def get_coordinate_data(data, geedata, start_date, end_date, **kwargs):
     """
-    Extracts median values from a GEE dataset for the given geometry.
+    Pull data from provided coordinates from GEE.
 
     Args:
-        data (str, pd.DataFrame, gpd.GeoDataFrame): Input data (GeoJSON, DataFrame, or GeoDataFrame).
-        geedata (str): GEE dataset ID.
-        start_date (str): Start date for filtering the dataset.
-        end_date (str): End date for filtering the dataset.
-        **kwargs: Additional arguments for the GEE dataset.
+        data (str): The data to get the coordinate data from.
+
+    Returns:
+        data (str): CSV file contained GEE data.
     """
-     
+
+    lat_cols = ['lat', 'latitude', 'y', 'LAT', 'Latitude', 'Y']
+    lon_cols = ['lon', 'long', 'longitude', 'x', 'LON', 'Longitude', 'Long', 'X']
+
+    def find_column(possible_names, columns):
+            for name in possible_names:
+                if name in columns:
+                    return name
+            # fallback: check case-insensitive match
+            lower_columns = {c.lower(): c for c in columns}
+            for name in possible_names:
+                if name.lower() in lower_columns:
+                    return lower_columns[name.lower()]
+            raise ValueError(f"No matching column found for {possible_names}")
+
+
     # Load data with safety checks
     if isinstance(data, str):
-        # Assume the file is a GeoJSON or Shapefile with polygons
-        gdf = gpd.read_file(data)
-        if gdf.crs is None:
-            gdf.set_crs("EPSG:4326", inplace=True)
-        else:
-            gdf = gdf.to_crs("EPSG:4326")
+        coordinates = pd.read_csv(data)
+        lat_col = find_column(lat_cols, coordinates.columns)
+        lon_col = find_column(lon_cols, coordinates.columns)
+        coordinates = coordinates[[lat_col, lon_col]].rename(columns={lat_col: 'LAT', lon_col: 'LON'})
+        gdf = gpd.GeoDataFrame(
+            coordinates,
+            geometry=gpd.points_from_xy(coordinates.LON, coordinates.LAT),
+            crs="EPSG:4326",  # Directly set CRS during creation
+        )
     elif isinstance(data, pd.DataFrame):
-        # If you have a DataFrame, it should already have a 'geometry' column with Polygon objects
-        # If not, you need to construct it-otherwise, just convert to GeoDataFrame
-        gdf = gpd.GeoDataFrame(data, geometry="geometry")
-        if gdf.crs is None:
-            gdf.set_crs("EPSG:4326", inplace=True)
-        else:
-            gdf = gdf.to_crs("EPSG:4326")
+        coordinates = data
+        lat_col = find_column(lat_cols, coordinates.columns)
+        lon_col = find_column(lon_cols, coordinates.columns)
+        coordinates = coordinates[[lat_col, lon_col]].rename(columns={lat_col: 'LAT', lon_col: 'LON'})
+        gdf = gpd.GeoDataFrame(
+            coordinates,
+            geometry=gpd.points_from_xy(coordinates.LON, coordinates.LAT),
+            crs="EPSG:4326",  # Directly set CRS during creation
+        )
     else:
-        # If already a GeoDataFrame
-        if data.crs is None:
-            gdf = data.set_crs("EPSG:4326")
-        else:
-            gdf = data.to_crs("EPSG:4326")
+        coordinates = data.to_crs(epsg=4326)  # Ensure WGS84
+        lat_col = find_column(lat_cols, coordinates.columns)
+        lon_col = find_column(lon_cols, coordinates.columns)   
+        gdf = coordinates.rename(columns={lat_col: 'LAT', lon_col: 'LON'})
 
     geojson = gdf.__geo_interface__
     fc = gm.geojson_to_ee(geojson)
@@ -175,9 +190,13 @@ col1, col2 = st.columns(2)
 
 with col1:
     uploaded_file = st.file_uploader(
-        "Upload a GeoJSON file.",
-        type=["geojson"])
-    
+        "Upload a CSV file.",
+        type=["csv"],
+        help="Double check that your CSV file is formatted correctly with LAT and LONG columns.")
+    st.markdown("""
+                The CSV file should contain latitude and longitude columns labeled as LAT and LONG, with a indexing column (no specific column name necessary). Ensure the file is formatted correctly for processing. \n
+                [Example file](https://raw.githubusercontent.com/taraskiba/streamlit-skiba/refs/heads/main/sample_data/coordinate-point-formatting.csv)
+                """)
 with col2:
     url = "https://raw.githubusercontent.com/opengeos/geospatial-data-catalogs/master/gee_catalog.json"
 
@@ -210,25 +229,11 @@ with col3:
             file_info = uploaded_file.getvalue()
             points = gpd.read_file(io.BytesIO(file_info))
 
-            id_cols = ['id', 'ID', 'plot_ID', 'plot_id', 'plotID', 'plotId']
-            def find_column(possible_names, columns):
-                            for name in possible_names:
-                                if name in columns:
-                                    return name
-                            # fallback: check case-insensitive match
-                            lower_columns = {c.lower(): c for c in columns}
-                            for name in possible_names:
-                                if name.lower() in lower_columns:
-                                    return lower_columns[name.lower()]
-                            raise ValueError(f"No matching column found for {possible_names}")
-            id_col = find_column(id_cols, points.columns)
-            points = points.rename(columns={id_col: 'plot_ID'})
-
             if not geedata:
                 st.error("Please ensure all fields are filled out correctly.")
             else:
                 # convert date/time: pd.to_datetime('2024-12-31') 
-                returned_dataset = extract_median_values(
+                returned_dataset = get_coordinate_data(
                     data=points, geedata=geedata, start_date=start_date, end_date=end_date
                 )
                 
@@ -247,6 +252,6 @@ with col3:
                     st.error("No data extracted. Please check your inputs and try again.")
                     
         else:
-            st.error("Please check inputs.")    
+            st.error("Please upload a CSV file with LAT and LONG columns.")    
         
      

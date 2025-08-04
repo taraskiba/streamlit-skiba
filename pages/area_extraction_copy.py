@@ -57,6 +57,21 @@ def extract_median_values(data, geedata, start_date, end_date, **kwargs):
         end_date (str): End date for filtering the dataset.
         **kwargs: Additional arguments for the GEE dataset.
     """
+    
+    lat_cols = ['lat', 'latitude', 'y', 'LAT', 'Latitude', 'Y']
+    lon_cols = ['lon', 'long', 'longitude', 'x', 'LON', 'Longitude', 'Long', 'X']
+
+    def find_column(possible_names, columns):
+            for name in possible_names:
+                if name in columns:
+                    return name
+            # fallback: check case-insensitive match
+            lower_columns = {c.lower(): c for c in columns}
+            for name in possible_names:
+                if name.lower() in lower_columns:
+                    return lower_columns[name.lower()]
+            raise ValueError(f"No matching column found for {possible_names}")
+
      
     # Load data with safety checks
     if isinstance(data, str):
@@ -176,7 +191,8 @@ col1, col2 = st.columns(2)
 with col1:
     uploaded_file = st.file_uploader(
         "Upload a GeoJSON file.",
-        type=["geojson"])
+        type=["geojson"]
+    )
     
 with col2:
     url = "https://raw.githubusercontent.com/opengeos/geospatial-data-catalogs/master/gee_catalog.json"
@@ -210,20 +226,6 @@ with col3:
             file_info = uploaded_file.getvalue()
             points = gpd.read_file(io.BytesIO(file_info))
 
-            id_cols = ['id', 'ID', 'plot_ID', 'plot_id', 'plotID', 'plotId']
-            def find_column(possible_names, columns):
-                            for name in possible_names:
-                                if name in columns:
-                                    return name
-                            # fallback: check case-insensitive match
-                            lower_columns = {c.lower(): c for c in columns}
-                            for name in possible_names:
-                                if name.lower() in lower_columns:
-                                    return lower_columns[name.lower()]
-                            raise ValueError(f"No matching column found for {possible_names}")
-            id_col = find_column(id_cols, points.columns)
-            points = points.rename(columns={id_col: 'plot_ID'})
-
             if not geedata:
                 st.error("Please ensure all fields are filled out correctly.")
             else:
@@ -247,6 +249,6 @@ with col3:
                     st.error("No data extracted. Please check your inputs and try again.")
                     
         else:
-            st.error("Please check inputs.")    
+            st.error("Please upload a CSV file with LAT and LONG columns.")    
         
      
