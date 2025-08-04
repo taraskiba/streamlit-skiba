@@ -92,6 +92,8 @@ def extract_median_values(data, geedata, start_date, end_date, **kwargs):
     # Retrieve data from the image using sampleRegions
     sampled_data = gm.extract_values_to_points(fc, geeimage, scale = None)
     print(dataset_id)
+    print(geeimage.getInfo())
+    print(sampled_data.getInfo())
     return sampled_data
 
 @st.cache_data
