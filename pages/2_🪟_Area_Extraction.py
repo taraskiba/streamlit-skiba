@@ -44,7 +44,7 @@ ee_initialize(force_use_service_account=True)
 
 def hash_geodataframe(data):
     # This might be slow for very large GeoDataFrames
-    return hash(data.to_geo_dict()) 
+    return hash(data.to_json()) 
 
 @st.cache_data(hash_funcs={gpd.GeoDataFrame: hash_geodataframe})
 def extract_median_values(data, geedata, start_date, end_date, **kwargs):
