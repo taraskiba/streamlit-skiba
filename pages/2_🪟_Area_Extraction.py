@@ -91,9 +91,9 @@ def extract_median_values(data, geedata, start_date, end_date, **kwargs):
 
     # Retrieve data from the image using sampleRegions
     sampled_data = gm.extract_values_to_points(fc, geeimage, scale = None)
-    print(dataset_id)
-    print(geeimage.getInfo())
-    print(sampled_data.getInfo())
+    st.write(dataset_id)
+    st.write(geeimage.getInfo())
+    st.write(sampled_data.getInfo())
     return sampled_data
 
 @st.cache_data
@@ -226,7 +226,7 @@ with col3:
             # id_col = find_column(id_cols, points.columns)
             # points = points.rename(columns={id_col: 'plot_ID'})
 
-            st.print(points.head())
+            st.write(points.head())
             if not geedata:
                 st.error("Please ensure all fields are filled out correctly.")
             else:
