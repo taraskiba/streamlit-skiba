@@ -58,7 +58,8 @@ def extract_median_values(data, geedata, start_date, end_date, **kwargs):
         end_date (str): End date for filtering the dataset.
         **kwargs: Additional arguments for the GEE dataset.
     """
-     
+    
+    st.write(type(data))
     # Load data with safety checks
     if isinstance(data, str):
         # Assume the file is a GeoJSON or Shapefile with polygons
@@ -88,7 +89,6 @@ def extract_median_values(data, geedata, start_date, end_date, **kwargs):
     # geojson = gdf.__geo_interface__
     #fc = gm.geojson_to_ee(geojson)
 
-    st.write(type(gdf))
 
     fc = eeconvert.gdfToFc(gdf)
     
