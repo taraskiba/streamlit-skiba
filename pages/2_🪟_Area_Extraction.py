@@ -226,6 +226,7 @@ with col3:
             # id_col = find_column(id_cols, points.columns)
             # points = points.rename(columns={id_col: 'plot_ID'})
 
+            st.print(points.head())
             if not geedata:
                 st.error("Please ensure all fields are filled out correctly.")
             else:
