@@ -81,9 +81,8 @@ def extract_median_values(data, geedata, start_date, end_date, **kwargs):
         else:
             gdf = data.to_crs("EPSG:4326")
 
-    gdf_str = gdf.astype(str)
-
-    geojson = gdf_str.__geo_interface__
+    st.write(type(gdf))
+    geojson = gdf.__geo_interface__
     fc = gm.geojson_to_ee(geojson)
     
     dataset_id = f"{geedata}"
