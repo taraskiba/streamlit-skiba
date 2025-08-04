@@ -82,7 +82,7 @@ def extract_median_values(data, geedata, start_date, end_date, **kwargs):
             gdf = data.to_crs("EPSG:4326")
 
 
-    geojson = gdf.to_geojson()
+    geojson = gdf.to_json()
     fc = ee.FeatureCollection(geojson)
     # st.write(type(gdf))
     # geojson = gdf.__geo_interface__
