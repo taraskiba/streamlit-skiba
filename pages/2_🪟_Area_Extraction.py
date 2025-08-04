@@ -42,9 +42,9 @@ def ee_initialize(force_use_service_account=False):
 # Initialize GEE
 ee_initialize(force_use_service_account=True)
 
-def hash_geodataframe(gdf):
+def hash_geodataframe(data):
     # This might be slow for very large GeoDataFrames
-    return hash(gdf.to_geo_dict()) 
+    return hash(data.to_geo_dict()) 
 
 @st.cache_data(hash_funcs={gpd.GeoDataFrame: hash_geodataframe})
 def extract_median_values(data, geedata, start_date, end_date, **kwargs):
@@ -87,6 +87,8 @@ def extract_median_values(data, geedata, start_date, end_date, **kwargs):
     # st.write(type(gdf))
     # geojson = gdf.__geo_interface__
     #fc = gm.geojson_to_ee(geojson)
+
+    st.write(type(gdf))
 
     fc = eeconvert.gdfToFc(gdf)
     
@@ -231,7 +233,6 @@ with col3:
             # id_col = find_column(id_cols, points.columns)
             # points = points.rename(columns={id_col: 'plot_ID'})
 
-            st.write(points.head())
             if not geedata:
                 st.error("Please ensure all fields are filled out correctly.")
             else:
