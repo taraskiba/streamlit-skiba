@@ -83,10 +83,9 @@ def extract_median_values(data, geedata, start_date, end_date, **kwargs):
 
 
     geojson = gdf.to_json()
-    fc = ee.FeatureCollection(geojson)
     # st.write(type(gdf))
     # geojson = gdf.__geo_interface__
-    # fc = gm.geojson_to_ee(geojson)
+    fc = gm.geojson_to_ee(geojson)
     
     dataset_id = f"{geedata}"
 
