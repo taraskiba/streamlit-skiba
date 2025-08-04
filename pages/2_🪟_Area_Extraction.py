@@ -212,19 +212,19 @@ with col3:
             file_info = uploaded_file.getvalue()
             points = gpd.read_file(io.BytesIO(file_info))
 
-            id_cols = ['id', 'ID', 'plot_ID', 'plot_id', 'plotID', 'plotId']
-            def find_column(possible_names, columns):
-                            for name in possible_names:
-                                if name in columns:
-                                    return name
-                            # fallback: check case-insensitive match
-                            lower_columns = {c.lower(): c for c in columns}
-                            for name in possible_names:
-                                if name.lower() in lower_columns:
-                                    return lower_columns[name.lower()]
-                            raise ValueError(f"No matching column found for {possible_names}")
-            id_col = find_column(id_cols, points.columns)
-            points = points.rename(columns={id_col: 'plot_ID'})
+            # id_cols = ['id', 'ID', 'plot_ID', 'plot_id', 'plotID', 'plotId']
+            # def find_column(possible_names, columns):
+            #                 for name in possible_names:
+            #                     if name in columns:
+            #                         return name
+            #                 # fallback: check case-insensitive match
+            #                 lower_columns = {c.lower(): c for c in columns}
+            #                 for name in possible_names:
+            #                     if name.lower() in lower_columns:
+            #                         return lower_columns[name.lower()]
+            #                 raise ValueError(f"No matching column found for {possible_names}")
+            # id_col = find_column(id_cols, points.columns)
+            # points = points.rename(columns={id_col: 'plot_ID'})
 
             if not geedata:
                 st.error("Please ensure all fields are filled out correctly.")
