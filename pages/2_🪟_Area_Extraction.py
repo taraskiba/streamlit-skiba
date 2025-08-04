@@ -3,6 +3,7 @@ import requests
 import pandas as pd
 import numpy as np
 import ee
+import eeconvert
 import geemap as gm
 import geopandas as gpd
 import io
@@ -82,11 +83,13 @@ def extract_median_values(data, geedata, start_date, end_date, **kwargs):
             gdf = data.to_crs("EPSG:4326")
 
 
-    geojson = gdf.to_json()
+    #geojson = gdf.to_json()
     # fc = ee.FeatureCollection(geojson)
     # st.write(type(gdf))
     # geojson = gdf.__geo_interface__
-    fc = gm.geojson_to_ee(geojson)
+    #fc = gm.geojson_to_ee(geojson)
+
+    fc = eeconvert.gdf_to_ee(gdf, as_feature_collection=True)
     
     dataset_id = f"{geedata}"
 

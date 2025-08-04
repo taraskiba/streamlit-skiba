@@ -6,6 +6,7 @@ requests
 streamlit
 geemap
 ee
+eeconvert
 setuptools
 google-auth
 streamlit_folium
