@@ -59,7 +59,6 @@ def extract_median_values(data, geedata, start_date, end_date, **kwargs):
         **kwargs: Additional arguments for the GEE dataset.
     """
     
-    st.write(type(data))
     # Load data with safety checks
     if isinstance(data, str):
         # Assume the file is a GeoJSON or Shapefile with polygons
@@ -98,7 +97,8 @@ def extract_median_values(data, geedata, start_date, end_date, **kwargs):
     geeimage = load_gee_as_image(dataset_id=dataset_id, start_date=start_date, end_date=end_date)
 
     # Retrieve data from the image using sampleRegions
-    sampled_data = gm.extract_values_to_points(fc, geeimage, scale = None)
+    #sampled_data = gm.extract_values_to_points(fc, geeimage, scale = None)
+    sampled_data = gm.zonal_statistics(dataset_id, fc, statistics_type='MEAN', scale=None)
     
     st.write(sampled_data.getInfo())
     return sampled_data
