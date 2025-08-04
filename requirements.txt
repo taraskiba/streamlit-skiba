@@ -11,3 +11,4 @@ setuptools
 google-auth
 streamlit_folium
 google-auth-oauthlib
+pyarrow>4.0.1 
