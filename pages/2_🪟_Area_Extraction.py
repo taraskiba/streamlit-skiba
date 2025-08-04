@@ -217,6 +217,7 @@ with col3:
         if uploaded_file is not None:
             file_info = uploaded_file.getvalue()
             points = gpd.read_file(io.BytesIO(file_info))
+            st.write(type(points))
 
             # id_cols = ['id', 'ID', 'plot_ID', 'plot_id', 'plotID', 'plotId']
             # def find_column(possible_names, columns):
