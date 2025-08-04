@@ -240,6 +240,7 @@ with col3:
                     data=points, geedata=geedata, start_date=start_date, end_date=end_date
                 )
                 
+                st.write(type(returned_dataset))
                 returned_df = gm.ee_to_df(returned_dataset)
                 returned_csv = returned_df.to_csv(index=False)
 
