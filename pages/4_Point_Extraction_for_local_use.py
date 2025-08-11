@@ -39,7 +39,7 @@ ee.Initialize(project="ee-forestplotvariables")  # Initialize the Earth Engine A
 # ee_initialize(force_use_service_account=True)
 
 # Beginning of web app development
-st.set_page_config(page_title='Extract GEE Data from Coordinates', layout='wide')
+st.set_page_config(page_title="Extract GEE Data from Coordinates", layout="wide")
 
 # Customize the sidebar
 markdown = """
@@ -54,17 +54,20 @@ logo = "https://github.com/taraskiba/skiba/blob/a98750c413bd869324c551e7910886b0
 st.sidebar.image(logo)
 
 st.title("Extract GEE Info from Coordinates")
-st.header("Extract Data from Google Earth Engine (GEE) using Coordinates in a CSV File.")
+st.header(
+    "Extract Data from Google Earth Engine (GEE) using Coordinates in a CSV File."
+)
 
 # Sidebar filters - # nested sidebar title when duplicated under main one
-# st.sidebar.title('Filters') 
+# st.sidebar.title('Filters')
 # regions = st.sidebar.multiselect('Select Region', df['Region'].unique(), default=df['Region'].unique())
 # products = st.sidebar.multiselect('Select Product', df['Product'].unique(), default=df['Product'].unique())
 
 # Filter data
 # filtered_df = df[(df['Region'].isin(regions)) & (df['Product'].isin(products))]
 
-@st.cache_data 
+
+@st.cache_data
 def get_coordinate_data(data, geedata, start_date, end_date, **kwargs):
     """
     Pull data from provided coordinates from GEE.
@@ -96,16 +99,19 @@ def get_coordinate_data(data, geedata, start_date, end_date, **kwargs):
 
     geojson = gdf.__geo_interface__
     fc = gm.geojson_to_ee(geojson)
-    
+
     dataset_id = f"{geedata}"
 
     # Load the GEE dataset as an image
-    geeimage = load_gee_as_image(dataset_id=dataset_id, start_date=start_date, end_date=end_date)
+    geeimage = load_gee_as_image(
+        dataset_id=dataset_id, start_date=start_date, end_date=end_date
+    )
 
     # Retrieve data from the image using sampleRegions
-    sampled_data = gm.extract_values_to_points(fc, geeimage, scale = None)
+    sampled_data = gm.extract_values_to_points(fc, geeimage, scale=None)
 
     return sampled_data
+
 
 @st.cache_data
 def load_gee_as_image(dataset_id, start_date=None, end_date=None, **kwargs):
@@ -157,6 +163,7 @@ def load_gee_as_image(dataset_id, start_date=None, end_date=None, **kwargs):
             "Dataset ID is not a valid Image, ImageCollection, or FeatureCollection."
         )
 
+
 # Top row
 col1, col2 = st.columns(2)
 
@@ -164,7 +171,8 @@ with col1:
     uploaded_file = st.file_uploader(
         "Upload a CSV file. The CSV file should contain latitude and longitude columns labeled as LAT and LONG, with a indexing column (no specific column name necessary). Ensure the file is formatted correctly for processing.",
         type=["csv"],
-        help="Double check that your CSV file is formatted correctly with LAT and LONG columns.")
+        help="Double check that your CSV file is formatted correctly with LAT and LONG columns.",
+    )
 
 with col2:
     url = "https://raw.githubusercontent.com/opengeos/geospatial-data-catalogs/master/gee_catalog.json"
@@ -173,23 +181,25 @@ with col2:
     data = response.json()
 
     data_dict = {item["id"]: item["url"] for item in data if "id" in item}
-    df = pd.DataFrame(list(data_dict.items()), columns=['id', 'url'])
-    geedata = st.selectbox('Select a GEE dataset', df['id'])
+    df = pd.DataFrame(list(data_dict.items()), columns=["id", "url"])
+    geedata = st.selectbox("Select a GEE dataset", df["id"])
     url = data_dict.get(str(geedata))
 
-    st.write('Dataset ID:', url)
+    st.write("Dataset ID:", url)
     geedata = str(geedata)
     geedata_stripped = geedata.strip()
     file_name = geedata_stripped.replace("/", "_")
-    st.write('Your file will be downloaded under the following name:', file_name,'.csv')
+    st.write(
+        "Your file will be downloaded under the following name:", file_name, ".csv"
+    )
 
 # Second row
 col1, col2, col3 = st.columns(3)
 with col1:
-    start_date = st.date_input('(Optional) Start Date', value=None)
+    start_date = st.date_input("(Optional) Start Date", value=None)
 
 with col2:
-    end_date = st.date_input('(Optional) End Date', value=None)
+    end_date = st.date_input("(Optional) End Date", value=None)
 
 with col3:
     st.button("Reset", type="primary")
@@ -201,26 +211,28 @@ with col3:
             if not geedata:
                 st.error("Please ensure all fields are filled out correctly.")
             else:
-                # convert date/time: pd.to_datetime('2024-12-31') 
+                # convert date/time: pd.to_datetime('2024-12-31')
                 returned_dataset = get_coordinate_data(
-                    data=points, geedata=geedata, start_date=start_date, end_date=end_date
+                    data=points,
+                    geedata=geedata,
+                    start_date=start_date,
+                    end_date=end_date,
                 )
-                
+
                 returned_df = gm.ee_to_df(returned_dataset)
                 returned_csv = returned_df.to_csv(index=False)
 
-                
                 if returned_csv:
-                    st.success("Data extraction complete! You can download the results.")
+                    st.success(
+                        "Data extraction complete! You can download the results."
+                    )
                     st.download_button(
-                        label="Download Results",
-                        data=returned_csv,
-                        file_name=file_name
+                        label="Download Results", data=returned_csv, file_name=file_name
                     )
                 else:
-                    st.error("No data extracted. Please check your inputs and try again.")
-                    
+                    st.error(
+                        "No data extracted. Please check your inputs and try again."
+                    )
+
         else:
-            st.error("Please upload a CSV file with LAT and LONG columns.")    
-        
-     
+            st.error("Please upload a CSV file with LAT and LONG columns.")

@@ -12,8 +12,8 @@ from ee import oauth
 import json
 
 # When running locally, use the following lines to authenticate and initialize Earth Engine
-#ee.Authenticate()  # Authenticate with Google Earth Engine when using locally
-#ee.Initialize(project="ee-forestplotvariables")  # Initialize the Earth Engine API
+# ee.Authenticate()  # Authenticate with Google Earth Engine when using locally
+# ee.Initialize(project="ee-forestplotvariables")  # Initialize the Earth Engine API
 
 # When deploying onto remote server, run the following
 # @st.cache_resource
@@ -23,15 +23,18 @@ import json
 #     ee.Initialize(credentials)
 # initialize_ee()  # Initialize the Earth Engine API with token
 
+
 @st.cache_resource
 def ee_initialize(force_use_service_account=False):
     if force_use_service_account or "EARTHENGINE_TOKEN" in st.secrets:
         ### Make sure to replace \n with \\n in updated secrets
         # to ensure valid JSON format
         json_credentials = st.secrets["EARTHENGINE_TOKEN"]
-        json_credentials = json_credentials.replace("'", "\"")  # Ensure valid JSON format
+        json_credentials = json_credentials.replace(
+            "'", '"'
+        )  # Ensure valid JSON format
         credentials_dict = json.loads(json_credentials)
-        if 'client_email' not in credentials_dict:
+        if "client_email" not in credentials_dict:
             raise ValueError("Service account info is missing 'client_email' field.")
         credentials = service_account.Credentials.from_service_account_info(
             credentials_dict, scopes=oauth.SCOPES
@@ -39,12 +42,16 @@ def ee_initialize(force_use_service_account=False):
         ee.Initialize(credentials)
     else:
         ee.Initialize()
+
+
 # Initialize GEE
 ee_initialize(force_use_service_account=True)
 
+
 def hash_geodataframe(data):
     # This might be slow for very large GeoDataFrames
-    return hash(data.to_json()) 
+    return hash(data.to_json())
+
 
 @st.cache_data(hash_funcs={gpd.GeoDataFrame: hash_geodataframe})
 def extract_median_values(data, geedata, start_date, end_date, **kwargs):
@@ -58,7 +65,7 @@ def extract_median_values(data, geedata, start_date, end_date, **kwargs):
         end_date (str): End date for filtering the dataset.
         **kwargs: Additional arguments for the GEE dataset.
     """
-    
+
     # Load data with safety checks
     if isinstance(data, str):
         # Assume the file is a GeoJSON or Shapefile with polygons
@@ -82,25 +89,27 @@ def extract_median_values(data, geedata, start_date, end_date, **kwargs):
         else:
             gdf = data.to_crs("EPSG:4326")
 
-    #geojson = gdf.to_json()
+    # geojson = gdf.to_json()
     # fc = ee.FeatureCollection(geojson)
     # st.write(type(gdf))
     # geojson = gdf.__geo_interface__
-    #fc = gm.geojson_to_ee(geojson)
-
+    # fc = gm.geojson_to_ee(geojson)
 
     fc = eeconvert.gdfToFc(gdf)
-    
+
     dataset_id = f"{geedata}"
 
     # Load the GEE dataset as an image
-    geeimage = load_gee_as_image(dataset_id=dataset_id, start_date=start_date, end_date=end_date)
+    geeimage = load_gee_as_image(
+        dataset_id=dataset_id, start_date=start_date, end_date=end_date
+    )
 
     # Retrieve data from the image using sampleRegions
-    #sampled_data = gm.extract_values_to_points(fc, geeimage, scale = None)
-    sampled_data = gm.zonal_statistics(geeimage, fc, statistics_type='MEAN', scale=None)
+    # sampled_data = gm.extract_values_to_points(fc, geeimage, scale = None)
+    sampled_data = gm.zonal_statistics(geeimage, fc, statistics_type="MEAN", scale=None)
 
     return sampled_data
+
 
 @st.cache_data
 def load_gee_as_image(dataset_id, start_date=None, end_date=None, **kwargs):
@@ -152,8 +161,9 @@ def load_gee_as_image(dataset_id, start_date=None, end_date=None, **kwargs):
             "Dataset ID is not a valid Image, ImageCollection, or FeatureCollection."
         )
 
+
 # Beginning of web app development
-st.set_page_config(page_title='Extract GEE Data from Coordinates', layout='wide')
+st.set_page_config(page_title="Extract GEE Data from Coordinates", layout="wide")
 
 # Customize the sidebar
 markdown = """
@@ -171,7 +181,7 @@ st.title("Extract Google Earth Engine Data from Coordinates")
 st.header("Lat-Long Coordinate-based Approach to Retrieving GEE Data.")
 
 # Sidebar filters - # nested sidebar title when duplicated under main one
-# st.sidebar.title('Filters') 
+# st.sidebar.title('Filters')
 # regions = st.sidebar.multiselect('Select Region', df['Region'].unique(), default=df['Region'].unique())
 # products = st.sidebar.multiselect('Select Product', df['Product'].unique(), default=df['Product'].unique())
 
@@ -182,10 +192,8 @@ st.header("Lat-Long Coordinate-based Approach to Retrieving GEE Data.")
 col1, col2 = st.columns(2)
 
 with col1:
-    uploaded_file = st.file_uploader(
-        "Upload a GeoJSON file.",
-        type=["geojson"])
-    
+    uploaded_file = st.file_uploader("Upload a GeoJSON file.", type=["geojson"])
+
 with col2:
     url = "https://raw.githubusercontent.com/opengeos/geospatial-data-catalogs/master/gee_catalog.json"
 
@@ -193,23 +201,25 @@ with col2:
     data = response.json()
 
     data_dict = {item["id"]: item["url"] for item in data if "id" in item}
-    df = pd.DataFrame(list(data_dict.items()), columns=['id', 'url'])
-    geedata = st.selectbox('Select a GEE dataset', df['id'])
+    df = pd.DataFrame(list(data_dict.items()), columns=["id", "url"])
+    geedata = st.selectbox("Select a GEE dataset", df["id"])
     url = data_dict.get(str(geedata))
 
-    st.write('Dataset ID:', url)
+    st.write("Dataset ID:", url)
     geedata = str(geedata)
     geedata_stripped = geedata.strip()
     file_name = geedata_stripped.replace("/", "_")
-    st.write('Your file will be downloaded under the following name:', file_name,'.csv')
+    st.write(
+        "Your file will be downloaded under the following name:", file_name, ".csv"
+    )
 
 # Second row
 col1, col2, col3 = st.columns(3)
 with col1:
-    start_date = st.date_input('(Optional) Start Date', value=None)
+    start_date = st.date_input("(Optional) Start Date", value=None)
 
 with col2:
-    end_date = st.date_input('(Optional) End Date', value=None)
+    end_date = st.date_input("(Optional) End Date", value=None)
 
 with col3:
     st.button("Reset", type="primary")
@@ -236,28 +246,30 @@ with col3:
             if not geedata:
                 st.error("Please ensure all fields are filled out correctly.")
             else:
-                # convert date/time: pd.to_datetime('2024-12-31') 
+                # convert date/time: pd.to_datetime('2024-12-31')
                 returned_dataset = extract_median_values(
-                    data=points, geedata=geedata, start_date=start_date, end_date=end_date
+                    data=points,
+                    geedata=geedata,
+                    start_date=start_date,
+                    end_date=end_date,
                 )
-                
+
                 # st.write(type(returned_dataset))
                 # returned_df = gm.ee_to_df(returned_dataset)
                 returned_df = pd.DataFrame.from_dict(returned_dataset)
                 returned_csv = returned_df.to_csv(index=False)
 
-                
                 if returned_csv:
-                    st.success("Data extraction complete! You can download the results.")
+                    st.success(
+                        "Data extraction complete! You can download the results."
+                    )
                     st.download_button(
-                        label="Download Results",
-                        data=returned_csv,
-                        file_name=file_name
+                        label="Download Results", data=returned_csv, file_name=file_name
                     )
                 else:
-                    st.error("No data extracted. Please check your inputs and try again.")
-                    
+                    st.error(
+                        "No data extracted. Please check your inputs and try again."
+                    )
+
         else:
-            st.error("Please check inputs.")    
-        
-     
+            st.error("Please check inputs.")
