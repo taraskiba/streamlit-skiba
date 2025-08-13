@@ -83,11 +83,11 @@ def get_coordinate_data(data, geedata, start_date, end_date, **kwargs):
 
     # Retrieve data from the image using sampleRegions
     sampled_data = gm.extract_values_to_points(fc, geeimage, scale = None)
-    print(dataset_id)
+    
     return sampled_data
 
 @st.cache_data
-def load_gee_as_image(dataset_id, start_date=None, end_date=None, **kwargs):
+def load_gee_as_image(dataset_id, start_date, end_date, **kwargs):
     """
     Loads any GEE dataset (Image, ImageCollection, FeatureCollection) as an ee.Image.
     Optionally filters by start and end date if applicable.
@@ -100,41 +100,46 @@ def load_gee_as_image(dataset_id, start_date=None, end_date=None, **kwargs):
     Returns:
         ee.Image: The resulting image.
     """
+    url = "https://raw.githubusercontent.com/opengeos/geospatial-data-catalogs/master/gee_catalog.json"
+    response = requests.get(url)
+    response.raise_for_status()  # Raises an exception for HTTP errors
+    geojson_data = response.json()
+
+    data_type =[item["type"] for item in geojson_data if item["id"]==dataset_id]
+    data_str = ' '.join(data_type)
+    start_date = str(start_date)
+    end_date = str(end_date)
+
     # Try loading as Image
-    try:
+    if data_str == "image":
         img = ee.Image(dataset_id)
         # If .getInfo() doesn't throw, it's an Image
         img.getInfo()
         return img
-    except Exception:
-        pass
-
-    # Try loading as ImageCollection
-    try:
+    elif data_str == "image_collection":
         col = ee.ImageCollection(dataset_id)
         # If date filters are provided, apply them
-        if start_date and end_date:
+        if start_date is None and end_date is None:
             col = col.filterDate(start_date, end_date)
         else:
             pass
         # Reduce to a single image (e.g., median composite)
         img = col.median()
-        img.getInfo()  # Throws if not valid
         return img
-    except Exception:
-        pass
-
     # Try loading as FeatureCollection (convert to raster)
-    try:
+    else:
         fc_temp = ee.FeatureCollection(dataset_id)
+        if start_date is None and end_date is None:
+                fc_temp = fc_temp.filterDate(start_date, end_date)
         # Convert to raster: burn a value of 1 into a new image
-        img = fc_temp.reduceToImage(properties=[], reducer=ee.Reducer.constant(1))
+        img = fc_temp.reduceToImage(properties=[], reducer=ee.Reducer.median())
         img.getInfo()
         return img
-    except Exception:
-        raise ValueError(
-            "Dataset ID is not a valid Image, ImageCollection, or FeatureCollection."
-        )
+        # or print(f"Dataset must be either an Image or Image Collection")
+        # except Exception:
+        #     raise ValueError(
+        #         "Dataset ID is not a valid Image, ImageCollection, or FeatureCollection."
+        #     )
 
 # Beginning of web app development
 st.set_page_config(page_title='Extract GEE Data from Coordinates', layout='wide')

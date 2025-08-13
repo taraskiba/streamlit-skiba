@@ -11,11 +11,13 @@ import shapely
 
 # Define functions
 @st.cache_data(hash_funcs={shapely.geometry.Point: lambda p: p.wkb})
-def create_obfuscated_circle(point, radius, _crs="EPSG:4326"):
+def create_obfuscated_point(point, radius, _crs="EPSG:4326"):
         """
         Create a circle polygon (as a shapely geometry) with the given radius in feet,
         where the provided point is randomly located inside the circle (not at the center).
         """
+        # Convert radius from feet to meters
+        radius = radius * 0.3048
 
         # Project to local UTM for accurate distance calculations
         utm_crs = f"EPSG:326{int((point.x + 180) // 6) + 1}"
@@ -31,19 +33,17 @@ def create_obfuscated_circle(point, radius, _crs="EPSG:4326"):
         center_y = y - distance * np.sin(angle)
         center = Point(center_x, center_y)
 
-        # Create the circle at the calculated center
-        circle = center.buffer(radius, resolution=32)
-
         # Transform the circle back to WGS84
-        circle_latlon = shapely.ops.transform(
-            lambda x, y: transformer_to_latlon.transform(x, y), circle
+        center_latlon = shapely.ops.transform(
+            lambda x, y: transformer_to_latlon.transform(x, y), center
         )
-        return circle_latlon
+        return center_latlon
+
 
 @st.cache_data(hash_funcs={shapely.geometry.Point: lambda p: p.wkb})
-def obfuscate_points_to_circles(data, radius, plot_id_col):
+def obfuscate_points(data, radius, plot_id_col):
         """
-        Obfuscate points to circles and save as GeoJSON.
+        Obfuscate points within a radius and save as csv.
 
         Args:
             data (str, pd.DataFrame, gpd.GeoDataFrame): Input data (GeoJSON, DataFrame, or GeoDataFrame).
@@ -68,20 +68,20 @@ def obfuscate_points_to_circles(data, radius, plot_id_col):
         else:
             gdf = data.to_crs(epsg=4326)  # Ensure WGS84
 
-        circles = []
+        centers = []
         ids = []
         for idx, row in gdf.iterrows():
             point = row["geometry"]
-            circle = create_obfuscated_circle(point, radius, _crs=gdf.crs)
-            circles.append(circle)
+            center = create_obfuscated_point(point, radius, crs=gdf.crs)
+            centers.append(center)
             ids.append(row[plot_id_col])
-        # Create new GeoDataFrame
-        gdf_circles = gpd.GeoDataFrame(
-            {plot_id_col: ids, "geometry": circles}, crs=gdf.crs
-        )
-        geojson_str = gdf_circles.to_json()
+        df = pd.DataFrame({plot_id_col: ids,
+            'lat': [p.y for p in centers],
+            'lon': [p.x for p in centers]})
+        # point_df = pd.DataFrame(gdf_circles)
+        point_csv = df.to_csv()
         
-        return geojson_str
+        return point_csv
 
 # Beginning of web app development
 st.set_page_config(page_title='Extract GEE Data from Coordinates', layout='wide')
@@ -138,7 +138,7 @@ with col2:
 # Second row
 col1, col2 = st.columns(2)
 with col1:
-    buffer_distance = st.number_input('Buffer Distance (in m)', min_value=0, value=1000, step=1, key='buffer_distance)')
+    buffer_distance = st.number_input('Buffer Distance (in ft)', min_value=0, value=1000, step=1, key='buffer_distance)')
 
 with col2:
     st.button("Reset", type="primary")
@@ -172,18 +172,18 @@ with col2:
                 st.error("Please ensure all fields are filled out correctly.")
             else:
                 # convert date/time: pd.to_datetime('2024-12-31') 
-                returned_geojson = obfuscate_points_to_circles(
+                returned_points = obfuscate_points(
                     data=points,
                     radius=buffer_distance,
                     plot_id_col="plot_ID"
                 )
-                file_name = f"buffered_coordinates_{buffer_distance}m.geojson"
+                file_name = f"buffered_coordinates_{buffer_distance}ft.csv"
 
-                if returned_geojson:
+                if returned_points:
                     st.success("Data extraction complete! You can download the results.")
                     st.download_button(
                         label="Download Results",
-                        data=returned_geojson,
+                        data=returned_points,
                         file_name=file_name
                     )
                 else:
