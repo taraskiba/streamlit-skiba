@@ -37,7 +37,6 @@ def create_obfuscated_point(point, radius, _crs="EPSG:4326"):
         center_latlon = shapely.ops.transform(
             lambda x, y: transformer_to_latlon.transform(x, y), center
         )
-        st.write(center_latlon)
         return center_latlon
        
 
@@ -69,18 +68,18 @@ def obfuscate_points(data, radius, plot_id_col):
         else:
             gdf = data.to_crs(epsg=4326)  # Ensure WGS84
 
-        circles = []
+        centers = []
         ids = []
         for idx, row in gdf.iterrows():
             point = row["geometry"]
-            circle = create_obfuscated_point(point, radius, _crs=gdf.crs)
-            circles.append(circle)
+            center = create_obfuscated_point(point, radius, _crs=gdf.crs)
+            centers.append(center)
             ids.append(row[plot_id_col])
             # Create new GeoDataFrame
-        gdf_circles = gpd.GeoDataFrame(
-            {plot_id_col: ids, "geometry": circles}, crs=gdf.crs
+        gdf_centers = gpd.GeoDataFrame(
+            {plot_id_col: ids, "geometry": centers}, crs=gdf.crs
         )
-        geojson_str = gdf_circles.to_json()
+        geojson_str = gdf_centers.to_json()
         
         return geojson_str
 
