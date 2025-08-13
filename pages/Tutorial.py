@@ -22,7 +22,12 @@ st.title("User Guide")
 st.header("Walkthroughs and FAQs")
 
 st.subheader("Which tools are right for me?")
+markdown = """
+![Flowchart](https://github.com/taraskiba/streamlit-skiba/blob/main/sample_data/walkthrough-flowchart.png?raw=true)
+"""
+st.markdown(markdown)
 
+st.subheader("Point Extraction")
 
 markdown = """
 This app is based on the _skiba_ package and allows users to extract data from Google Earth Engine (GEE) using on a point or area scale.  This package pulls the average pixel value for a specified area for the entire GEE dataset or optional time peroid. Consult the GEE page for the dataset of interest to view the pixel size and time period. \n
