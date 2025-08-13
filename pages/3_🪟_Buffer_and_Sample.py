@@ -15,11 +15,11 @@ import pointpats
 def create_obfuscated_points(point, radius, no_samp, _crs="EPSG:4326"):
         """
         Create a circle polygon (as a shapely geometry) with the given radius in feet,
-        where the provided point is randomly located inside the circle (not at the center) 
+        where the provided point is randomly located inside the circle (not at the center)
         and sample a specifed number of points within the circle.
         """
         # Convert radius from feet to meters
-        radius = radius * 0.3048
+        radius_m = radius * 0.3048
 
         # Project to local UTM for accurate distance calculations
         utm_crs = f"EPSG:326{int((point.x + 180) // 6) + 1}"
@@ -27,18 +27,27 @@ def create_obfuscated_points(point, radius, no_samp, _crs="EPSG:4326"):
         transformer_to_latlon = Transformer.from_crs(utm_crs, _crs, always_xy=True)
         x, y = transformer_to_utm.transform(point.x, point.y)
 
-        # Randomize the point's location within the circle
-        angle = np.random.uniform(0, 2 * np.pi)
-        distance = np.random.uniform(0, radius)
-        # Calculate center of the circle so that the point is inside the circle but not at the center
-        center_x = x - distance * np.cos(angle)
-        center_y = y - distance * np.sin(angle)
-        center = Point(center_x, center_y)
+        points = []
+        for no in range(no_samp):   
+            # Randomize the point's location within the circle
+            angle = np.random.uniform(0, 2 * np.pi)
+            distance = np.random.uniform(0, radius_m)
+            # Calculate center of the circle so that the point is inside the circle but not at the center
+            center_x = x - distance * np.cos(angle)
+            center_y = y - distance * np.sin(angle)
+            center = Point(center_x, center_y)
+            center_latlon = shapely.ops.transform(
+                lambda x, y: transformer_to_latlon.transform(x, y), center
+            )
+            points.append(center_latlon)
+        return points
 
-        circle = center.buffer(radius, resolution=32)
-        pgon = shapely.geometry.Polygon(circle)
+        
+       
 
-        sampled_points = random_points_in_polygon(pgon, no_samp)
+        # circle = center.buffer(radius, resolution=32)
+        # pgon = shapely.geometry.Polygon(circle)
+
         
         # Transform the circle back to WGS84
         # center_latlon = shapely.ops.transform(
@@ -46,7 +55,7 @@ def create_obfuscated_points(point, radius, no_samp, _crs="EPSG:4326"):
         # )
         # return center_latlon
         return sampled_points
-       
+
 
 @st.cache_data(hash_funcs={shapely.geometry.Point: lambda p: p.wkb})
 def obfuscate_points(data, radius, no_samp, plot_id_col):
@@ -83,22 +92,36 @@ def obfuscate_points(data, radius, no_samp, plot_id_col):
             center = create_obfuscated_points(point, radius, no_samp, _crs=gdf.crs)
             for pt in center:
                 centers.append({'plot_ID': row[plot_id_col],
-                                'lon': pt.x,
-                                'lat':pt.y})
+                                'lat': pt.y,
+                                'lon':pt.x})
             # Create new GeoDataFrame
         df = pd.DataFrame(centers)
-        
+
         return df
 
-def random_points_in_polygon(polygon, num_points):
-    minx, miny, maxx, maxy = polygon.bounds
+def random_points_in_polygon(point, radius, num_points, _crs = "EPSG:4326"):
     points = []
-    while len(points) < num_points:
-        random_point = Point(np.random.uniform(minx, maxx),
-                             np.random.uniform(miny, maxy))
-        if polygon.contains(random_point):
-            points.append(random_point)
+    utm_crs = f"EPSG:326{int((point.x + 180) // 6) + 1}"
+    transformer_to_utm = Transformer.from_crs(_crs, utm_crs, always_xy=True)
+    transformer_to_latlon = Transformer.from_crs(utm_crs, _crs, always_xy=True)
+    x, y = transformer_to_utm.transform(point.x, point.y)
+
+    for count in range(num_points):
+     # Random angle and distance
+        angle = np.random.uniform(0, 2 * np.pi)
+        distance = np.random.uniform(0, radius)
+
+        center_x = x - distance * np.cos(angle)
+        center_y = y - distance * np.sin(angle)
+        center = Point(center_x, center_y)
+        center_latlon = shapely.ops.transform(
+            lambda x, y: transformer_to_latlon.transform(x, y), center
+        )
+
+        # Append as shapely Point
+        points.append(center_latlon)
     return points
+
 
 @st.cache_data
 def convert_for_download(df):
@@ -123,7 +146,7 @@ st.title("Buffer Sensitive Coordinates by Sampling a Region")
 st.header("Optional Prelimiary Step to the Point or Area Extraction Module.")
 
 # Sidebar filters - # nested sidebar title when duplicated under main one
-# st.sidebar.title('Filters') 
+# st.sidebar.title('Filters')
 # regions = st.sidebar.multiselect('Select Region', df['Region'].unique(), default=df['Region'].unique())
 # products = st.sidebar.multiselect('Select Product', df['Product'].unique(), default=df['Product'].unique())
 
@@ -158,7 +181,7 @@ with col2:
     url = data_dict.get(str(geedata))
 
     st.write('Dataset ID:', url)
-    
+
 # Second row
 col1, col2, col3 = st.columns(3)
 with col1:
@@ -188,17 +211,17 @@ with col3:
                     if name.lower() in lower_columns:
                         return lower_columns[name.lower()]
                 raise ValueError(f"No matching column found for {possible_names}")
-            
+
             lat_col = find_column(lat_cols, points.columns)
             lon_col = find_column(lon_cols, points.columns)
             id_col = find_column(id_cols, points.columns)
 
             points = points.rename(columns={lat_col: 'LAT', lon_col: 'LON', id_col: 'plot_ID'})
-        
+
             if not geedata:
                 st.error("Please ensure all fields are filled out correctly.")
             else:
-                # convert date/time: pd.to_datetime('2024-12-31') 
+                # convert date/time: pd.to_datetime('2024-12-31')
                 returned_df = obfuscate_points(
                     data=points,
                     radius=buffer_distance,
@@ -218,8 +241,7 @@ with col3:
                     )
                 else:
                     st.error("No data extracted. Please check your inputs and try again.")
-                    
+
         else:
-            st.error("Please upload a CSV file with LAT and LONG columns.")    
-        
-    
+            st.error("Please upload a CSV file with LAT and LONG columns.")
+
