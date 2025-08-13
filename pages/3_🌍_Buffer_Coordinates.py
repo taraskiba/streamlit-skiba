@@ -77,11 +77,11 @@ def obfuscate_points(data, radius, plot_id_col):
             circle = create_obfuscated_point(point, radius, _crs=gdf.crs)
             circles.append(circle)
             ids.append(row[plot_id_col])
-        # Create new GeoDataFrame
-        gdf_circles = gpd.GeoDataFrame(
-            {plot_id_col: ids, "geometry": circles}, crs=gdf.crs
-        )
-        geojson_str = gdf_circles.to_json()
+            # Create new GeoDataFrame
+        df = pd.DataFrame({plot_id_col: ids,
+                'lat': [p.y for p in circles],
+                'lon': [p.x for p in circles]})
+        geojson_str = df.to_json()
         
         return geojson_str
 
