@@ -156,7 +156,6 @@ st.header("Optional Prelimiary Step to the Point or Area Extraction Module.")
 # Top row
 col1 = st.columns(1)
 
-
 with col1:
     st.write("Optional: check resolution of Google Earth Engine dataset to determine appropriate buffer area.")
     url = "https://raw.githubusercontent.com/opengeos/geospatial-data-catalogs/master/gee_catalog.json"
