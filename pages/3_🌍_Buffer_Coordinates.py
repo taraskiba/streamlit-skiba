@@ -180,7 +180,6 @@ with col2:
                     radius=buffer_distance,
                     plot_id_col="plot_ID"
                 )
-                st.write(returned_df)
                 file_name = f"buffered_coordinates_{buffer_distance}ft.csv"
 
                 csv = convert_for_download(returned_df)
