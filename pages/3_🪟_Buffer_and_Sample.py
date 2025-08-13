@@ -154,7 +154,8 @@ st.header("Optional Prelimiary Step to the Point or Area Extraction Module.")
 # filtered_df = df[(df['Region'].isin(regions)) & (df['Product'].isin(products))]
 
 # Top row
-col1 = st.columns(1)
+col1, col2 = st.columns(2)
+
 
 with col1:
     st.write("Optional: check resolution of Google Earth Engine dataset to determine appropriate buffer area.")
@@ -170,8 +171,7 @@ with col1:
 
     st.write('Dataset ID:', url)
 
-col1 = st.columns(1)
-with col1:
+with col2:
     uploaded_file = st.file_uploader(
         "Step 1: Upload a CSV file.",
         type=["csv"],
