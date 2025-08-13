@@ -33,16 +33,16 @@ def create_obfuscated_point(point, radius, _crs="EPSG:4326"):
         center_y = y - distance * np.sin(angle)
         center = Point(center_x, center_y)
 
+        # Create the circle at the calculated center
+        circle = center.buffer(radius, resolution=32)
+
         # Transform the circle back to WGS84
-        center_latlon = shapely.ops.transform(
-            lambda x, y: transformer_to_latlon.transform(x, y), center
+        circle_latlon = shapely.ops.transform(
+            lambda x, y: transformer_to_latlon.transform(x, y), circle
         )
-        return center_latlon
+        return circle_latlon
 
-
-#@st.cache_data(hash_funcs={shapely.geometry.Point: lambda p: p.wkb})
-@st.cache_data
-@st.cache_resource
+@st.cache_data(hash_funcs={shapely.geometry.Point: lambda p: p.wkb})
 def obfuscate_points(data, radius, plot_id_col):
         """
         Obfuscate points within a radius and save as csv.
@@ -70,22 +70,20 @@ def obfuscate_points(data, radius, plot_id_col):
         else:
             gdf = data.to_crs(epsg=4326)  # Ensure WGS84
 
-        centers = []
+        circles = []
         ids = []
         for idx, row in gdf.iterrows():
             point = row["geometry"]
-            center = create_obfuscated_point(point, radius, crs=gdf.crs)
-            centers.append(center)
+            circle = create_obfuscated_point(point, radius, _crs=gdf.crs)
+            circles.append(circle)
             ids.append(row[plot_id_col])
-        df = pd.DataFrame({plot_id_col: ids,
-            'lat': [p.y for p in centers],
-            'lon': [p.x for p in centers]})
+        # Create new GeoDataFrame
+        gdf_circles = gpd.GeoDataFrame(
+            {plot_id_col: ids, "geometry": circles}, crs=gdf.crs
+        )
+        geojson_str = gdf_circles.to_json()
         
-        return df
-
-@st.cache_data
-def convert_for_download(df):
-    return df.to_csv().encode("utf-8")
+        return geojson_str
 
 # Beginning of web app development
 st.set_page_config(page_title='Extract GEE Data from Coordinates', layout='wide')
@@ -176,20 +174,18 @@ with col2:
                 st.error("Please ensure all fields are filled out correctly.")
             else:
                 # convert date/time: pd.to_datetime('2024-12-31') 
-                returned_points = obfuscate_points(
+                returned_geojson = obfuscate_points(
                     data=points,
                     radius=buffer_distance,
                     plot_id_col="plot_ID"
                 )
-                file_name = f"buffered_coordinates_{buffer_distance}ft.csv"
+                file_name = f"buffered_coordinates_{buffer_distance}ft.geojson"
 
-                csv = convert_for_download(returned_points)
-
-                if returned_points:
+                if returned_geojson:
                     st.success("Data extraction complete! You can download the results.")
                     st.download_button(
                         label="Download Results",
-                        data=csv,
+                        data=returned_geojson,
                         file_name=file_name
                     )
                 else:
