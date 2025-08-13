@@ -13,3 +13,5 @@ streamlit_folium
 google-auth-oauthlib
 numpy
 pandas
+pyproj
+pointpats

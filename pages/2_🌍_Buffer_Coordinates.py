@@ -117,11 +117,14 @@ col1, col2 = st.columns(2)
 
 with col1:
     uploaded_file = st.file_uploader(
-        "Upload a CSV file.",
+        "Step 1: Upload a CSV file.",
         type=["csv"],
         help="Double check that your CSV file is formatted correctly with LAT and LONG columns.")
     st.markdown("""
-                The CSV file should contain latitude and longitude columns labeled as LAT and LONG, with a indexing column (no specific column name necessary). Ensure the file is formatted correctly for processing. \n
+                Accepted names for uploaded CSV file: \n
+                lat_cols = ['lat', 'latitude', 'y', 'LAT', 'Latitude', 'Y'] \n
+                lon_cols = ['lon', 'long', 'longitude', 'x', 'LON', 'Longitude', 'Long', 'X'] \n
+                id_cols = ['id', 'ID', 'plot_ID', 'plot_id', 'plotID', 'plotId'] \n
                 [Example file](https://raw.githubusercontent.com/taraskiba/streamlit-skiba/refs/heads/main/sample_data/coordinate-point-formatting.csv)
                 """)
 with col2:
@@ -133,7 +136,7 @@ with col2:
 
     data_dict = {item["id"]: item["url"] for item in data if "id" in item}
     df = pd.DataFrame(list(data_dict.items()), columns=['id', 'url'])
-    geedata = st.selectbox('Select a GEE dataset', df['id'])
+    geedata = st.selectbox('GEE datasets for reference', df['id'])
     url = data_dict.get(str(geedata))
 
     st.write('Dataset ID:', url)
@@ -141,7 +144,7 @@ with col2:
 # Second row
 col1, col2 = st.columns(2)
 with col1:
-    buffer_distance = st.number_input('Buffer Distance (in ft)', min_value=0, value=1000, step=1, key='buffer_distance)')
+    buffer_distance = st.number_input('Step 2: Buffer Distance (in ft)', min_value=0, value=1000, step=1, key='buffer_distance)')
 
 with col2:
     st.button("Reset", type="primary")

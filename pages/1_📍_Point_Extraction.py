@@ -172,11 +172,14 @@ col1, col2 = st.columns(2)
 
 with col1:
     uploaded_file = st.file_uploader(
-        "Upload a CSV file.",
+        "Step 1: Upload a CSV file.",
         type=["csv"],
         help="Double check that your CSV file is formatted correctly with accepted latitude and longitude columns.")
     st.markdown("""
-                The CSV file should contain latitude and longitude columns labeled as LAT and LONG, with a indexing column (no specific column name necessary). Ensure the file is formatted correctly for processing. \n
+                Accepted names for uploaded CSV file:
+                lat_cols = ['lat', 'latitude', 'y', 'LAT', 'Latitude', 'Y']
+                lon_cols = ['lon', 'long', 'longitude', 'x', 'LON', 'Longitude', 'Long', 'X']
+                id_cols = ['id', 'ID', 'plot_ID', 'plot_id', 'plotID', 'plotId']
                 [Example file](https://raw.githubusercontent.com/taraskiba/streamlit-skiba/refs/heads/main/sample_data/coordinate-point-formatting.csv)
                 """)
 with col2:
@@ -187,7 +190,7 @@ with col2:
 
     data_dict = {item["id"]: item["url"] for item in data if "id" in item}
     df = pd.DataFrame(list(data_dict.items()), columns=['id', 'url'])
-    geedata = st.selectbox('Select a GEE dataset', df['id'])
+    geedata = st.selectbox('Step 2: Select a GEE dataset', df['id'])
     url = data_dict.get(str(geedata))
 
     st.write('Dataset ID:', url)
