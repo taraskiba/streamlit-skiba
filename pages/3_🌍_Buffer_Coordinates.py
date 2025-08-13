@@ -37,7 +37,9 @@ def create_obfuscated_point(point, radius, _crs="EPSG:4326"):
         center_latlon = shapely.ops.transform(
             lambda x, y: transformer_to_latlon.transform(x, y), center
         )
+        st.write(center_latlon)
         return center_latlon
+       
 
 @st.cache_data(hash_funcs={shapely.geometry.Point: lambda p: p.wkb})
 def obfuscate_points(data, radius, plot_id_col):
