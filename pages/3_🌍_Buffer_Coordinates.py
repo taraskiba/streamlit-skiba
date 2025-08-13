@@ -76,12 +76,15 @@ def obfuscate_points(data, radius, plot_id_col):
             centers.append(center)
             ids.append(row[plot_id_col])
             # Create new GeoDataFrame
-        gdf_centers = gpd.GeoDataFrame(
-            {plot_id_col: ids, "geometry": centers}, crs=gdf.crs
-        )
-        geojson_str = gdf_centers.to_json()
+        df = pd.DataFrame({plot_id_col: ids,
+            'lat': [p.y for p in centers],
+            'lon': [p.x for p in centers]})
         
-        return geojson_str
+        return df
+
+@st.cache_data
+def convert_for_download(df):
+    return df.to_csv().encode("utf-8")
 
 # Beginning of web app development
 st.set_page_config(page_title='Extract GEE Data from Coordinates', layout='wide')
@@ -172,18 +175,21 @@ with col2:
                 st.error("Please ensure all fields are filled out correctly.")
             else:
                 # convert date/time: pd.to_datetime('2024-12-31') 
-                returned_geojson = obfuscate_points(
+                returned_df = obfuscate_points(
                     data=points,
                     radius=buffer_distance,
                     plot_id_col="plot_ID"
                 )
-                file_name = f"buffered_coordinates_{buffer_distance}ft.geojson"
+                st.write(returned_df)
+                file_name = f"buffered_coordinates_{buffer_distance}ft.csv"
 
-                if returned_geojson:
+                csv = convert_for_download(returned_df)
+
+                if csv:
                     st.success("Data extraction complete! You can download the results.")
                     st.download_button(
                         label="Download Results",
-                        data=returned_geojson,
+                        data=csv,
                         file_name=file_name
                     )
                 else:
