@@ -154,7 +154,7 @@ st.header("Optional Prelimiary Step to the Point or Area Extraction Module.")
 # filtered_df = df[(df['Region'].isin(regions)) & (df['Product'].isin(products))]
 
 # Top row
-col1, col2 = st.columns(2)
+col1 = st.columns(1)
 
 
 with col1:
@@ -171,7 +171,8 @@ with col1:
 
     st.write('Dataset ID:', url)
 
-with col2:
+col1 = st.columns(1)
+with col1:
     uploaded_file = st.file_uploader(
         "Step 1: Upload a CSV file.",
         type=["csv"],
