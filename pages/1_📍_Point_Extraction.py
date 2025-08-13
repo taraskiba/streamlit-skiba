@@ -176,10 +176,10 @@ with col1:
         type=["csv"],
         help="Double check that your CSV file is formatted correctly with accepted latitude and longitude columns.")
     st.markdown("""
-                Accepted names for uploaded CSV file:
-                lat_cols = ['lat', 'latitude', 'y', 'LAT', 'Latitude', 'Y']
-                lon_cols = ['lon', 'long', 'longitude', 'x', 'LON', 'Longitude', 'Long', 'X']
-                id_cols = ['id', 'ID', 'plot_ID', 'plot_id', 'plotID', 'plotId']
+                Accepted names for uploaded CSV file: \n
+                lat_cols = ['lat', 'latitude', 'y', 'LAT', 'Latitude', 'Y'] \n
+                lon_cols = ['lon', 'long', 'longitude', 'x', 'LON', 'Longitude', 'Long', 'X'] \n
+                id_cols = ['id', 'ID', 'plot_ID', 'plot_id', 'plotID', 'plotId'] \n
                 [Example file](https://raw.githubusercontent.com/taraskiba/streamlit-skiba/refs/heads/main/sample_data/coordinate-point-formatting.csv)
                 """)
 with col2:
