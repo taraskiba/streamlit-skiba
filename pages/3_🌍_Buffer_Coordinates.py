@@ -33,14 +33,11 @@ def create_obfuscated_point(point, radius, _crs="EPSG:4326"):
         center_y = y - distance * np.sin(angle)
         center = Point(center_x, center_y)
 
-        # Create the circle at the calculated center
-        circle = center.buffer(radius, resolution=32)
-
         # Transform the circle back to WGS84
-        circle_latlon = shapely.ops.transform(
-            lambda x, y: transformer_to_latlon.transform(x, y), circle
+        center_latlon = shapely.ops.transform(
+            lambda x, y: transformer_to_latlon.transform(x, y), center
         )
-        return circle_latlon
+        return center_latlon
 
 @st.cache_data(hash_funcs={shapely.geometry.Point: lambda p: p.wkb})
 def obfuscate_points(data, radius, plot_id_col):
