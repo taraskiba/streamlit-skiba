@@ -42,6 +42,7 @@ def create_obfuscated_point(point, radius, _crs="EPSG:4326"):
 
 #@st.cache_data(hash_funcs={shapely.geometry.Point: lambda p: p.wkb})
 @st.cache_data
+@st.cache_resource
 def obfuscate_points(data, radius, plot_id_col):
         """
         Obfuscate points within a radius and save as csv.
