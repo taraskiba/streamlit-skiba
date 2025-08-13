@@ -116,18 +116,6 @@ st.header("Prelimiary Step to the Area Extraction Module.")
 col1, col2 = st.columns(2)
 
 with col1:
-    uploaded_file = st.file_uploader(
-        "Step 1: Upload a CSV file.",
-        type=["csv"],
-        help="Double check that your CSV file is formatted correctly with LAT and LONG columns.")
-    st.markdown("""
-                Accepted names for uploaded CSV file: \n
-                lat_cols = ['lat', 'latitude', 'y', 'LAT', 'Latitude', 'Y'] \n
-                lon_cols = ['lon', 'long', 'longitude', 'x', 'LON', 'Longitude', 'Long', 'X'] \n
-                id_cols = ['id', 'ID', 'plot_ID', 'plot_id', 'plotID', 'plotId'] \n
-                [Example file](https://raw.githubusercontent.com/taraskiba/streamlit-skiba/refs/heads/main/sample_data/coordinate-point-formatting.csv)
-                """)
-with col2:
     st.write("Optional: check resolution of Google Earth Engine dataset to determine appropriate buffer area.")
     url = "https://raw.githubusercontent.com/opengeos/geospatial-data-catalogs/master/gee_catalog.json"
 
@@ -141,6 +129,20 @@ with col2:
 
     st.write('Dataset ID:', url)
     
+
+with col2:
+    uploaded_file = st.file_uploader(
+        "Step 1: Upload a CSV file.",
+        type=["csv"],
+        help="Double check that your CSV file is formatted correctly with LAT and LONG columns.")
+    st.markdown("""
+                Accepted names for uploaded CSV file: \n
+                lat_cols = ['lat', 'latitude', 'y', 'LAT', 'Latitude', 'Y'] \n
+                lon_cols = ['lon', 'long', 'longitude', 'x', 'LON', 'Longitude', 'Long', 'X'] \n
+                id_cols = ['id', 'ID', 'plot_ID', 'plot_id', 'plotID', 'plotId'] \n
+                [Example file](https://raw.githubusercontent.com/taraskiba/streamlit-skiba/refs/heads/main/sample_data/coordinate-point-formatting.csv)
+                """)
+
 # Second row
 col1, col2 = st.columns(2)
 with col1:
