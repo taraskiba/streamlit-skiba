@@ -249,7 +249,6 @@ with col3:
                 
                 returned_df = gm.ee_to_df(returned_dataset)
                 returned_csv = convert_df(returned_df)
-                st.write(type(returned_csv))
 
                 if returned_csv:
                     st.success("Data extraction complete! You can download the results.")
@@ -257,7 +256,7 @@ with col3:
                         label="Download Results",
                         data=returned_csv,
                         mime="text/csv",
-                        file_name=file_name
+                        file_name=f"{file_name}.csv"
                     )
                 else:
                     st.error("No data extracted. Please check your inputs and try again.")
