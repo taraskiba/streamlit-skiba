@@ -141,6 +141,10 @@ def load_gee_as_image(dataset_id, start_date, end_date, **kwargs):
         #         "Dataset ID is not a valid Image, ImageCollection, or FeatureCollection."
         #     )
 
+@st.cache_data
+def convert_df(df):
+    return df.to_csv().encode("utf-8")
+
 # Beginning of web app development
 st.set_page_config(page_title='Extract GEE Data from Coordinates', layout='wide')
 
@@ -244,10 +248,9 @@ with col3:
                 )
                 
                 returned_df = gm.ee_to_df(returned_dataset)
-                st.write(type(returned_df))
-                returned_csv = returned_df.to_csv(index=False).encode('utf-8')
+                returned_csv = convert_df(returned_df)
                 st.write(type(returned_csv))
-                
+
                 if returned_csv:
                     st.success("Data extraction complete! You can download the results.")
                     st.download_button(
