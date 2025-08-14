@@ -253,6 +253,7 @@ with col3:
                     st.download_button(
                         label="Download Results",
                         data=returned_csv,
+                        mime="text/csv",
                         file_name=file_name
                     )
                 else:
