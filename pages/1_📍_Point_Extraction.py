@@ -244,7 +244,7 @@ with col3:
                 )
                 
                 returned_df = gm.ee_to_df(returned_dataset)
-                returned_csv = returned_df.to_csv(index=False)
+                returned_csv = returned_df.to_csv(index=False).encode('utf-8')
 
                 
                 if returned_csv:
