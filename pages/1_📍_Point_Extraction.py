@@ -244,9 +244,9 @@ with col3:
                 )
                 
                 returned_df = gm.ee_to_df(returned_dataset)
-                print(type(returned_df))
+                st.write(type(returned_df))
                 returned_csv = returned_df.to_csv(index=False).encode('utf-8')
-                print(type(returned_csv))
+                st.write(type(returned_csv))
                 
                 if returned_csv:
                     st.success("Data extraction complete! You can download the results.")
