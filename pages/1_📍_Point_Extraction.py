@@ -179,13 +179,17 @@ with col1:
         "Step 1: Upload a CSV file.",
         type=["csv"],
         help="Double check that your CSV file is formatted correctly with accepted latitude and longitude columns.")
-    st.markdown("""
+    markdown = """
                 Accepted names for uploaded CSV file: \n
-                lat_cols = ['lat', 'latitude', 'y', 'LAT', 'Latitude', 'Y'] \n
-                lon_cols = ['lon', 'long', 'longitude', 'x', 'LON', 'Longitude', 'Long', 'X'] \n
-                id_cols = ['id', 'ID', 'plot_ID', 'plot_id', 'plotID', 'plotId'] \n
+                | **CSV Columns** | **Accepted Names**                                |
+                |-----------------|---------------------------------------------------|
+                | latitude        | lat, latitude, y, LAT, Latitude, Lat, Y                |
+                | longitude       | log, long, longitude, x, LON, Longitude, Long, X  |
+                | plot ID         | id, ID, plot_ID, plot_id, plotID, plotId          |
+                
                 [Example file](https://raw.githubusercontent.com/taraskiba/streamlit-skiba/refs/heads/main/sample_data/coordinate-point-formatting.csv)
-                """)
+                """
+    st.markdown(markdown)
 with col2:
     url = "https://raw.githubusercontent.com/opengeos/geospatial-data-catalogs/master/gee_catalog.json"
 
@@ -218,7 +222,7 @@ with col3:
             file_info = uploaded_file.getvalue()
             points = pd.read_csv(io.BytesIO(file_info))
 
-            lat_cols = ['lat', 'latitude', 'y', 'LAT', 'Latitude', 'Y']
+            lat_cols = ['lat', 'latitude', 'y', 'LAT', 'Latitude', 'Lat', 'Y']
             lon_cols = ['lon', 'long', 'longitude', 'x', 'LON', 'Longitude', 'Long', 'X']
             id_cols = ['id', 'ID', 'plot_ID', 'plot_id', 'plotID', 'plotId']
 

@@ -42,20 +42,6 @@ def create_obfuscated_points(point, radius, no_samp, _crs="EPSG:4326"):
             points.append(center_latlon)
         return points
 
-        
-       
-
-        # circle = center.buffer(radius, resolution=32)
-        # pgon = shapely.geometry.Polygon(circle)
-
-        
-        # Transform the circle back to WGS84
-        # center_latlon = shapely.ops.transform(
-        #     lambda x, y: transformer_to_latlon.transform(x, y), center
-        # )
-        # return center_latlon
-        return sampled_points
-
 
 @st.cache_data(hash_funcs={shapely.geometry.Point: lambda p: p.wkb})
 def obfuscate_points(data, radius, no_samp, plot_id_col):
@@ -99,29 +85,6 @@ def obfuscate_points(data, radius, no_samp, plot_id_col):
 
         return df
 
-def random_points_in_polygon(point, radius, num_points, _crs = "EPSG:4326"):
-    points = []
-    utm_crs = f"EPSG:326{int((point.x + 180) // 6) + 1}"
-    transformer_to_utm = Transformer.from_crs(_crs, utm_crs, always_xy=True)
-    transformer_to_latlon = Transformer.from_crs(utm_crs, _crs, always_xy=True)
-    x, y = transformer_to_utm.transform(point.x, point.y)
-
-    for count in range(num_points):
-     # Random angle and distance
-        angle = np.random.uniform(0, 2 * np.pi)
-        distance = np.random.uniform(0, radius)
-
-        center_x = x - distance * np.cos(angle)
-        center_y = y - distance * np.sin(angle)
-        center = Point(center_x, center_y)
-        center_latlon = shapely.ops.transform(
-            lambda x, y: transformer_to_latlon.transform(x, y), center
-        )
-
-        # Append as shapely Point
-        points.append(center_latlon)
-    return points
-
 
 @st.cache_data
 def convert_for_download(df):
@@ -158,7 +121,6 @@ col1, col2 = st.columns(2)
 
 
 with col1:
-    st.write("Optional: check resolution of Google Earth Engine dataset to determine appropriate buffer area.")
     url = "https://raw.githubusercontent.com/opengeos/geospatial-data-catalogs/master/gee_catalog.json"
 
     response = requests.get(url)
@@ -166,7 +128,7 @@ with col1:
 
     data_dict = {item["id"]: item["url"] for item in data if "id" in item}
     df = pd.DataFrame(list(data_dict.items()), columns=['id', 'url'])
-    geedata = st.selectbox('GEE datasets for reference', df['id'])
+    geedata = st.selectbox('Optional: check resolution of Google Earth Engine dataset to determine appropriate buffer area.', df['id'])
     url = data_dict.get(str(geedata))
 
     st.write('Dataset ID:', url)
@@ -176,14 +138,17 @@ with col2:
         "Step 1: Upload a CSV file.",
         type=["csv"],
         help="Double check that your CSV file is formatted correctly with LAT and LONG columns.")
-    st.markdown("""
+    markdown = """
                 Accepted names for uploaded CSV file: \n
-                lat_cols = ['lat', 'latitude', 'y', 'LAT', 'Latitude', 'Y'] \n
-                lon_cols = ['lon', 'long', 'longitude', 'x', 'LON', 'Longitude', 'Long', 'X'] \n
-                id_cols = ['id', 'ID', 'plot_ID', 'plot_id', 'plotID', 'plotId'] \n
-                [Example file](https://raw.githubusercontent.com/taraskiba/streamlit-skiba/refs/heads/main/sample_data/coordinate-point-formatting.csv)
-                """)
+                | **CSV Columns** | **Accepted Names**                                |
+                |-----------------|---------------------------------------------------|
+                | latitude        | lat, latitude, y, LAT, Latitude, Lat, Y                |
+                | longitude       | log, long, longitude, x, LON, Longitude, Long, X  |
+                | plot ID         | id, ID, plot_ID, plot_id, plotID, plotId          |
 
+                [Example file](https://raw.githubusercontent.com/taraskiba/streamlit-skiba/refs/heads/main/sample_data/coordinate-point-formatting.csv)
+                """
+    st.markdown(markdown)
 # Second row
 col1, col2, col3 = st.columns(3)
 with col1:
@@ -199,7 +164,7 @@ with col3:
             file_info = uploaded_file.getvalue()
             points = pd.read_csv(io.BytesIO(file_info))
 
-            lat_cols = ['lat', 'latitude', 'y', 'LAT', 'Latitude', 'Y']
+            lat_cols = ['lat', 'latitude', 'y', 'LAT', 'Latitude', 'Lat','Y']
             lon_cols = ['lon', 'long', 'longitude', 'x', 'LON', 'Longitude', 'Long', 'X']
             id_cols = ['id', 'ID', 'plot_ID', 'plot_id', 'plotID', 'plotId']
 
