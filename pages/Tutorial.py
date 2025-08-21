@@ -24,12 +24,7 @@ st.header("Walkthroughs and FAQs")
 st.subheader("Which tools are right for me?")
 
 markdown = """
-<div style="text-align: center;">
-<img src="https://github.com/taraskiba/skiba/blob/main/docs/files/flowchart.png?raw=true" alt="image" width="600" height="auto">
-</div>
-<p style="text-align:center;">
-Decision tree for user's data process methodology
-</p>
+![Flowchart](https://github.com/taraskiba/streamlit-skiba/blob/main/sample_data/walkthrough-flowchart.png?raw=true)
 """
 
 st.markdown(markdown)
