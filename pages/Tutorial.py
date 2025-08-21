@@ -22,32 +22,28 @@ st.title("User Guide")
 st.header("Walkthroughs and FAQs")
 
 st.subheader("Which tools are right for me?")
+
 markdown = """
-![Flowchart](https://github.com/taraskiba/streamlit-skiba/blob/main/sample_data/walkthrough-flowchart.png?raw=true)
+<div style="text-align: center;">
+<img src="https://github.com/taraskiba/skiba/blob/main/docs/files/flowchart.png?raw=true" alt="image" width="600" height="auto">
+</div>
+<p style="text-align:center;">
+Decision tree for user's data process methodology
+</p>
 """
+
 st.markdown(markdown)
 
+st.subheader("Common Issues")
+markdown = """
+**File formatting**: please make sure that your file is formatted in an accepted way. Common issues include 
+* unaccepted column names 
+* more than just the three neccessary columns
+* problems during file conversions (make sure end of csv file does not have extra commas)
+* incorrect coordinate formatting (must be in dd.)
+
+**GEE needs reinitialization**: Google Earth Engine needs to be reauthenticated periodically. Please email me to let me know.
+"""
+st.markdown(markdown)
 st.subheader("Point Extraction")
 
-markdown = """
-This app is based on the _skiba_ package and allows users to extract data from Google Earth Engine (GEE) using on a point or area scale.  This package pulls the average pixel value for a specified area for the entire GEE dataset or optional time peroid. Consult the GEE page for the dataset of interest to view the pixel size and time period. \n
-Due to some of the _skiba_ package's dependencies not being available in the Streamlit environment, this app is not built with the skiba package. 
-Instead, it is recreated in Streamlit to perform the same as queries from Google Earth Engine as done _skiba_ . Many portions of the streamlit version has code pulled directly from the _skiba_ package, but modified to function within Streamlit.
-You can compare the _skiba_ package's GitHub page ([_skiba_ on GitHub](https://github.com/taraskiba/skiba.git)) with this app's GitHub page ([_streamlit-skiba_ on GitHub](https://github.com/taraskiba/streamlit-skiba)) for similarities and differences.\n
-**Note:** carefully read over instructions for each section to ensure formatting and file types used are correct. \n
-
-*Please be considerate of your energy usage when using this app, as it is hosted on a server and uses Google Earth Engine's resources which contribute significant amounts of carbon. Please run only neccessary queries to minimize your carbon footprint.* \n
-"""
-st.markdown(markdown)
-st.subheader("**_“The greatest threat to our planet is the belief that someone else will save it.”_**")
-st.markdown("— Robert Swan ☯ Cheers.")
-
-
-markdown = """
-[tskiba@vols.utk.edu](mailto:tskiba@vols.utk.edu?subject=Skiba%20Package)
-for any problems or questions. \n
-Google Earth Engine may need to be reauthenticated from time to time.
-"""
-
-st.subheader("Email me")
-st.markdown(markdown)
