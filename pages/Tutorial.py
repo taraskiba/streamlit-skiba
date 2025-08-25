@@ -24,7 +24,7 @@ st.header("Walkthroughs and FAQs")
 st.subheader("Which tools are right for me?")
 
 markdown = """
-![Flowchart](https://github.com/taraskiba/streamlit-skiba/blob/main/sample_data/walkthrough-flowchart.png?raw=true)
+![Flowchart](https://github.com/taraskiba/skiba/blob/main/docs/files/flowchart.png?raw=true)
 """
 
 st.markdown(markdown)
