@@ -48,3 +48,4 @@ The following figure illustrates some common cases of how points can be buffered
 ![Buffered points](https://github.com/taraskiba/skiba/blob/main/docs/files/buffered_diagram.png?raw=true)
 Please refer to the upcoming publication and your data's user guide on handling confidential information for more information.
 """
+st.markdown(markdown)
