@@ -40,5 +40,11 @@ markdown = """
 **GEE needs reinitialization**: Google Earth Engine needs to be reauthenticated periodically. Please email me to let me know.
 """
 st.markdown(markdown)
-st.subheader("Point Extraction")
 
+st.subheader("Determine your buffer size")
+markdown = """
+If you are dealing with sensitive data, you may want to use a buffer around your points to avoid exact locations being used. The radius of the buffer size should take into account the radius of you inventory plot and the pixel size of the GEE dataset you are using.
+The following figure illustrates some common cases of how points can be buffered, given various plot and pixel sizes.
+![Buffered points](https://github.com/taraskiba/skiba/blob/main/docs/files/buffered_diagram.png?raw=true)
+Please refer to the upcoming publication and your data's user guide on handling confidential information for more information.
+"""
