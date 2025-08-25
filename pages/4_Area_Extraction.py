@@ -85,8 +85,8 @@ def get_coordinate_data(data, geedata, start_date, end_date, **kwargs):
     sampled_data = gm.extract_values_to_points(fc, geeimage, scale = None)
     sampled_df = gm.ee_to_df(sampled_data)
     filtered_df = sampled_df.drop(['LAT', 'LON', 'Unnamed: 0'], axis = 1)
-    print("Pre-aggregation data preview:")
-    print(filtered_df.head())
+    st.write("Pre-aggregation data preview:")
+    st.write(filtered_df.head())
     aggregated_df = filtered_df.groupby('plot_ID').mean()
     
     return aggregated_df
