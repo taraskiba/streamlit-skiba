@@ -32,7 +32,7 @@ You can compare the _skiba_ package's GitHub page ([_skiba_ on GitHub](https://g
 """
 st.markdown(markdown)
 st.subheader("**_“The greatest threat to our planet is the belief that someone else will save it.”_**")
-st.markdown("— Robert Swan ☯ Cheers.")
+st.markdown("— Robert Swan ☯")
 
 
 markdown = """
