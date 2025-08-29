@@ -151,7 +151,7 @@ def convert_df(df):
     return df.to_csv().encode("utf-8")
 
 # Beginning of web app development
-st.set_page_config(page_title='Extract GEE Data from Coordinates', layout='wide')
+st.set_page_config(page_title='Extract GEE data and average over matching plot ID', layout='wide')
 
 # Customize the sidebar
 markdown = """
@@ -165,8 +165,8 @@ st.sidebar.info(markdown)
 logo = "https://github.com/taraskiba/skiba/blob/a98750c413bd869324c551e7910886b0cd2d2d77/docs/files/logo.png?raw=true"
 st.sidebar.image(logo)
 
-st.title("Extract Google Earth Engine Data from Coordinates")
-st.header("Lat-Long Coordinate-based Approach to Retrieving GEE Data.")
+st.title("Extract GEE data and average over matching plot ID")
+st.header("Secondary Step to *Buffer and Sample*")
 
 # Sidebar filters - # nested sidebar title when duplicated under main one
 # st.sidebar.title('Filters') 

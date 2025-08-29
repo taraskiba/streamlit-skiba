@@ -105,7 +105,7 @@ st.sidebar.info(markdown)
 logo = "https://github.com/taraskiba/skiba/blob/a98750c413bd869324c551e7910886b0cd2d2d77/docs/files/logo.png?raw=true"
 st.sidebar.image(logo)
 
-st.title("Buffer Sensitive Coordinates by Sampling a Region")
+st.title("Buffer Sensitive Coordinates by Point Sampling a Buffered Area")
 st.header("Optional Prelimiary Step to the Point or Area Extraction Module.")
 
 # Sidebar filters - # nested sidebar title when duplicated under main one
