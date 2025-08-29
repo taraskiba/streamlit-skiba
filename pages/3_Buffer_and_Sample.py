@@ -106,7 +106,7 @@ logo = "https://github.com/taraskiba/skiba/blob/a98750c413bd869324c551e7910886b0
 st.sidebar.image(logo)
 
 st.title("Buffer Sensitive Coordinates by Point Sampling a Buffered Area")
-st.header("Optional Prelimiary Step to the Point or Area Extraction Module.")
+st.header("Optional Prelimiary Step to the Point or Aggregated Point Extraction Modules.")
 
 # Sidebar filters - # nested sidebar title when duplicated under main one
 # st.sidebar.title('Filters')
