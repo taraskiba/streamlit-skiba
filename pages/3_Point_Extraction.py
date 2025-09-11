@@ -161,7 +161,7 @@ logo = "https://github.com/taraskiba/skiba/blob/a98750c413bd869324c551e7910886b0
 st.sidebar.image(logo)
 
 st.title("Extract Google Earth Engine Data from Coordinates")
-st.header("Lat-Long Coordinate-based Approach to Retrieving GEE Data.")
+st.header("Standalone module or to be used after buffering coordinates. Does not aggregate data over matching plot IDs")
 
 # Sidebar filters - # nested sidebar title when duplicated under main one
 # st.sidebar.title('Filters') 

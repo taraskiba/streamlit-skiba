@@ -101,8 +101,8 @@ st.sidebar.info(markdown)
 logo = "https://github.com/taraskiba/skiba/blob/a98750c413bd869324c551e7910886b0cd2d2d77/docs/files/logo.png?raw=true"
 st.sidebar.image(logo)
 
-st.title("Buffer Coordinates to Hide Sensitive Location Data")
-st.header("Prelimiary Step to the Area Extraction Module.")
+st.title("Buffer Coordinates to A Single Obfuscated Point")
+st.header("Optional Preliminary Step to Point Extraction Module.")
 
 # Sidebar filters - # nested sidebar title when duplicated under main one
 # st.sidebar.title('Filters') 
