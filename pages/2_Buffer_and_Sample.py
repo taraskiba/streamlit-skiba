@@ -106,7 +106,7 @@ logo = "https://github.com/taraskiba/skiba/blob/a98750c413bd869324c551e7910886b0
 st.sidebar.image(logo)
 
 st.title("Buffer Coordinates to *n* Obfuscated Points")
-st.header("Optional Prelimiary Step to the Point or Aggregated Point Extraction Modules.")
+st.header("Optional Preliminary Step to the Point or Aggregated Point Extraction Modules.")
 
 # Sidebar filters - # nested sidebar title when duplicated under main one
 # st.sidebar.title('Filters')
