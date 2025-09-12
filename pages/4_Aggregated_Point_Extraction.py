@@ -91,7 +91,7 @@ def get_coordinate_data(data, geedata, start_date, end_date, **kwargs):
     
     id_col = aggregated_df.pop('plot_ID')
     aggregated_df.insert(0, 'plot_ID', id_col)  # Insert at the beginning
-    aggregated_df = aggregated_df.drop(columns = ['Unnamed'])
+    aggregated_df = aggregated_df.dropdrop(aggregated_df.columns[[3]], axis = 1)
     
     return aggregated_df
 
