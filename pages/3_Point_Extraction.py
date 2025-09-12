@@ -254,7 +254,7 @@ with col3:
                 returned_df = gm.ee_to_df(returned_dataset)
                 id_col = returned_df.pop('plot_ID')
                 returned_df.insert(0, 'plot_ID', id_col)  # Insert at the beginning
-                returned_df = returned_df.drop('Unnamed', axis=1, inplace=True)
+                
                 returned_csv = convert_df(returned_df)
 
                 if returned_csv:
