@@ -84,9 +84,6 @@ def get_coordinate_data(data, geedata, start_date, end_date, **kwargs):
     # Retrieve data from the image using sampleRegions
     sampled_data = gm.extract_values_to_points(fc, geeimage, scale = None)
     
-    id_col = sampled_data.pop('plot_ID')
-    sampled_data.insert(0, 'plot_ID', id_col)  # Insert at the beginning
-    sampled_data = sampled_data.drop(columns = ['Unnamed'])
     return sampled_data
 
 @st.cache_data
@@ -255,6 +252,9 @@ with col3:
                 )
                 
                 returned_df = gm.ee_to_df(returned_dataset)
+                id_col = returned_df.pop('plot_ID')
+                returned_df.insert(0, 'plot_ID', id_col)  # Insert at the beginning
+                returned_df = returned_df.drop(columns = ['Unnamed'])
                 returned_csv = convert_df(returned_df)
 
                 if returned_csv:
