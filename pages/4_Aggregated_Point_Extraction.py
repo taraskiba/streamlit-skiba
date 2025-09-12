@@ -257,9 +257,9 @@ with col3:
                 )
                 
                             
-                id_col = returned_dataset.pop('plot_ID')
-                returned_dataset.insert(0, 'plot_ID', id_col)  # Insert at the beginning
-                returned_dataset = returned_dataset.dropdrop(returned_dataset.columns[[3]], axis = 1)
+                # id_col = returned_dataset.pop('plot_ID')
+                # returned_dataset.insert(0, 'plot_ID', id_col)  # Insert at the beginning
+                # returned_dataset = returned_dataset.dropdrop(returned_dataset.columns[[3]], axis = 1)
                 returned_csv = convert_df(returned_dataset)
 
                 if returned_csv:
