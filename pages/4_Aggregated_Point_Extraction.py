@@ -89,10 +89,6 @@ def get_coordinate_data(data, geedata, start_date, end_date, **kwargs):
     st.write(filtered_df.head())
     aggregated_df = filtered_df.groupby('plot_ID').mean()
     
-    id_col = aggregated_df.pop('plot_ID')
-    aggregated_df.insert(0, 'plot_ID', id_col)  # Insert at the beginning
-    aggregated_df = aggregated_df.dropdrop(aggregated_df.columns[[3]], axis = 1)
-    
     return aggregated_df
 
 @st.cache_data
@@ -260,6 +256,10 @@ with col3:
                     data=points, geedata=geedata, start_date=start_date, end_date=end_date
                 )
                 
+                            
+                id_col = returned_dataset.pop('plot_ID')
+                returned_dataset.insert(0, 'plot_ID', id_col)  # Insert at the beginning
+                returned_dataset = returned_dataset.dropdrop(returned_dataset.columns[[3]], axis = 1)
                 returned_csv = convert_df(returned_dataset)
 
                 if returned_csv:
