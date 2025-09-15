@@ -205,7 +205,7 @@ with col2:
     df = pd.DataFrame(list(data_dict.items()), columns=['id', 'url'])
     geedata = st.selectbox('Step 2: Select a GEE dataset', df['id'])
     url = data_dict.get(str(geedata))
-
+    st.write('Image and ImageCollections only!')
     st.write('Dataset ID:', url)
     geedata = str(geedata)
     geedata_stripped = geedata.strip()
@@ -256,10 +256,6 @@ with col3:
                     data=points, geedata=geedata, start_date=start_date, end_date=end_date
                 )
                 
-                            
-                # id_col = returned_dataset.pop('plot_ID')
-                # returned_dataset.insert(0, 'plot_ID', id_col)  # Insert at the beginning
-                # returned_dataset = returned_dataset.dropdrop(returned_dataset.columns[[3]], axis = 1)
                 returned_csv = convert_df(returned_dataset)
 
                 if returned_csv:

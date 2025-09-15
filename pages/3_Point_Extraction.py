@@ -200,7 +200,7 @@ with col2:
     df = pd.DataFrame(list(data_dict.items()), columns=['id', 'url'])
     geedata = st.selectbox('Step 2: Select a GEE dataset', df['id'])
     url = data_dict.get(str(geedata))
-
+    st.write('Image and ImageCollections only!')
     st.write('Dataset ID:', url)
     geedata = str(geedata)
     geedata_stripped = geedata.strip()
