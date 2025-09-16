@@ -16,7 +16,7 @@ logo = "https://github.com/taraskiba/skiba/blob/a98750c413bd869324c551e7910886b0
 st.sidebar.image(logo)
 
 # Customize page title
-st.title("Streamlit for the _skiba_ Package")
+st.title("Streamlit for the _skiba_ package")
 
 
 st.header("A streamlit app version of the skiba package")
