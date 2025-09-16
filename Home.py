@@ -24,7 +24,7 @@ st.header("A streamlit app version of the skiba package")
 markdown = """
 This app is based on the _skiba_ package and allows users to extract data from Google Earth Engine (GEE) using on a point or area scale.  This package pulls the average pixel value for a specified area for the entire GEE dataset or optional time period. Consult the GEE page for the dataset of interest to view the pixel size and time period. \n
 Due to some of the _skiba_ package's dependencies not being available in the Streamlit environment, this app is not built with the skiba package. 
-Instead, it is recreated in Streamlit to perform the same as queries from Google Earth Engine as done _skiba_ . Many portions of the streamlit version has code pulled directly from the _skiba_ package, but modified to function within Streamlit.
+Instead, it is recreated in Streamlit to perform the same as queries from Google Earth Engine as done _skiba_. Many portions of the streamlit version has code pulled directly from the _skiba_ package, but modified to function within Streamlit.
 You can compare the _skiba_ package's GitHub page ([_skiba_ on GitHub](https://github.com/taraskiba/skiba.git)) with this app's GitHub page ([_streamlit-skiba_ on GitHub](https://github.com/taraskiba/streamlit-skiba)) for similarities and differences.\n
 **Note:** carefully read over instructions for each section to ensure formatting and file types used are correct. \n
 
