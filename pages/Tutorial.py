@@ -18,6 +18,12 @@ st.sidebar.image(logo)
 # Customize page title
 st.title("User Guide")
 
+markdown = """
+Slides from September 17, 2025 SNR Seminar and FIA Presentation:
+[here](https://github.com/taraskiba/streamlit-skiba/blob/main/skiba_%20a%20forester%E2%80%99s%20package%20to%20retrieve%20Google%20Earth%20Engine%20data.pdf)
+"""
+
+st.markdown(markdown)
 
 st.header("Walkthroughs and FAQs")
 
