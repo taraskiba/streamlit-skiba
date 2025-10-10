@@ -7,4 +7,5 @@ libgdal-dev
 libproj-dev
 libgeos-dev
 proj-bin
-libgdal32
+libodbc2
+libodbcinst2
