@@ -10,3 +10,4 @@ proj-bin
 libodbc2
 libodbcinst2
 unixodbc-common
+apt --fix-broken install
