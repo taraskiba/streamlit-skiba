@@ -12,4 +12,3 @@ libodbc2
 libodbcinst2
 unixodbc-common
 unixodbc
-apt --fix-broken install
