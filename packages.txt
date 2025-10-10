@@ -8,3 +8,7 @@ libproj-dev
 libgeos-dev
 proj-bin
 dpkg 
+libodbc2
+libodbcinst2
+unixodbc-common
+apt --fix-broken install
