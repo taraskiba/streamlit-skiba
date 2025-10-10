@@ -7,7 +7,4 @@ libgdal-dev
 libproj-dev
 libgeos-dev
 proj-bin
-libodbc2
-libodbcinst2
-unixodbc-common
 dpkg 
