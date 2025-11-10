@@ -214,7 +214,7 @@ with col1:
     start_date = st.date_input('(Optional) Start Date', value=None, min_value=datetime.date(1900,1,1))
 
 with col2:
-    end_date = st.date_input('(Optional) End Date', value=None)
+    end_date = st.date_input('(Optional) End Date', value=None, min_value=datetime.date(1900,1,1))
 
 with col3:
     st.button("Reset", type="primary")
