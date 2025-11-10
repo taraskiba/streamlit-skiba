@@ -6,6 +6,7 @@ import ee
 import geemap as gm
 import geopandas as gpd
 import io
+import datetime
 from google.oauth2 import service_account
 from ee import oauth
 import json
@@ -210,7 +211,7 @@ with col2:
 # Second row
 col1, col2, col3 = st.columns(3)
 with col1:
-    start_date = st.date_input('(Optional) Start Date', value=None)
+    start_date = st.date_input('(Optional) Start Date', value=None, min_value=datetime.date(1900,1,1))
 
 with col2:
     end_date = st.date_input('(Optional) End Date', value=None)
