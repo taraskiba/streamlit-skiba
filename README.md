@@ -6,6 +6,6 @@ Web App URL: <https://gskiba.streamlit.app>
 
 ## Instructions
 
-1. 
+1.
 ## Demo
 
