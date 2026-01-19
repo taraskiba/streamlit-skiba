@@ -11,8 +11,8 @@ from ee import oauth
 import json
 
 # When running locally, use the following lines to authenticate and initialize Earth Engine
-#ee.Authenticate()  # Authenticate with Google Earth Engine when using locally
-#ee.Initialize(project="ee-forestplotvariables")  # Initialize the Earth Engine API
+# ee.Authenticate()  # Authenticate with Google Earth Engine when using locally
+# ee.Initialize(project="ee-forestplotvariables")  # Initialize the Earth Engine API
 
 # When deploying onto remote server, run the following
 # @st.cache_resource
@@ -22,15 +22,18 @@ import json
 #     ee.Initialize(credentials)
 # initialize_ee()  # Initialize the Earth Engine API with token
 
+
 @st.cache_resource
 def ee_initialize(force_use_service_account=False):
     if force_use_service_account or "EARTHENGINE_TOKEN" in st.secrets:
         ### Make sure to replace \n with \\n in updated secrets
         # to ensure valid JSON format
         json_credentials = st.secrets["EARTHENGINE_TOKEN"]
-        json_credentials = json_credentials.replace("'", "\"")  # Ensure valid JSON format
+        json_credentials = json_credentials.replace(
+            "'", '"'
+        )  # Ensure valid JSON format
         credentials_dict = json.loads(json_credentials)
-        if 'client_email' not in credentials_dict:
+        if "client_email" not in credentials_dict:
             raise ValueError("Service account info is missing 'client_email' field.")
         credentials = service_account.Credentials.from_service_account_info(
             credentials_dict, scopes=oauth.SCOPES
@@ -38,11 +41,13 @@ def ee_initialize(force_use_service_account=False):
         ee.Initialize(credentials)
     else:
         ee.Initialize()
+
+
 # Initialize GEE
 ee_initialize(force_use_service_account=True)
 
 
-@st.cache_data 
+@st.cache_data
 def get_coordinate_data(data, geedata, start_date, end_date, **kwargs):
     """
     Pull data from provided coordinates from GEE.
@@ -53,7 +58,7 @@ def get_coordinate_data(data, geedata, start_date, end_date, **kwargs):
     Returns:
         data (str): CSV file contained GEE data.
     """
-    
+
     # Load data with safety checks
     if isinstance(data, str):
         coordinates = pd.read_csv(data)
@@ -71,25 +76,27 @@ def get_coordinate_data(data, geedata, start_date, end_date, **kwargs):
         )
     else:
         gdf = data.to_crs(epsg=4326)  # Ensure WGS84
-        
 
     geojson = gdf.__geo_interface__
     fc = gm.geojson_to_ee(geojson)
-    
+
     dataset_id = f"{geedata}"
 
     # Load the GEE dataset as an image
-    geeimage = load_gee_as_image(dataset_id=dataset_id, start_date=start_date, end_date=end_date)
+    geeimage = load_gee_as_image(
+        dataset_id=dataset_id, start_date=start_date, end_date=end_date
+    )
 
     # Retrieve data from the image using sampleRegions
-    sampled_data = gm.extract_values_to_points(fc, geeimage, scale = None)
+    sampled_data = gm.extract_values_to_points(fc, geeimage, scale=None)
     sampled_df = gm.ee_to_df(sampled_data)
-    filtered_df = sampled_df.drop(['LAT', 'LON', 'Unnamed: 0'], axis = 1)
+    filtered_df = sampled_df.drop(["LAT", "LON", "Unnamed: 0"], axis=1)
     st.write("Pre-aggregation data preview:")
     st.write(filtered_df.head())
-    aggregated_df = filtered_df.groupby('plot_ID').mean()
-    
+    aggregated_df = filtered_df.groupby("plot_ID").mean()
+
     return aggregated_df
+
 
 @st.cache_data
 def load_gee_as_image(dataset_id, start_date, end_date, **kwargs):
@@ -110,8 +117,8 @@ def load_gee_as_image(dataset_id, start_date, end_date, **kwargs):
     response.raise_for_status()  # Raises an exception for HTTP errors
     geojson_data = response.json()
 
-    data_type =[item["type"] for item in geojson_data if item["id"]==dataset_id]
-    data_str = ' '.join(data_type)
+    data_type = [item["type"] for item in geojson_data if item["id"] == dataset_id]
+    data_str = " ".join(data_type)
     start_date = str(start_date)
     end_date = str(end_date)
 
@@ -135,7 +142,7 @@ def load_gee_as_image(dataset_id, start_date, end_date, **kwargs):
     else:
         fc_temp = ee.FeatureCollection(dataset_id)
         if start_date is None and end_date is None:
-                fc_temp = fc_temp.filterDate(start_date, end_date)
+            fc_temp = fc_temp.filterDate(start_date, end_date)
         # Convert to raster: burn a value of 1 into a new image
         img = fc_temp.reduceToImage(properties=[], reducer=ee.Reducer.median())
         img.getInfo()
@@ -146,12 +153,16 @@ def load_gee_as_image(dataset_id, start_date, end_date, **kwargs):
         #         "Dataset ID is not a valid Image, ImageCollection, or FeatureCollection."
         #     )
 
+
 @st.cache_data
 def convert_df(df):
     return df.to_csv().encode("utf-8")
 
+
 # Beginning of web app development
-st.set_page_config(page_title='Extract GEE data and average over matching plot ID', layout='wide')
+st.set_page_config(
+    page_title="Extract GEE data and average over matching plot ID", layout="wide"
+)
 
 # Customize the sidebar
 markdown = """
@@ -169,7 +180,7 @@ st.title("Extract GEE data and average over matching plot ID")
 st.header("Secondary Step to *Buffer and Sample*")
 
 # Sidebar filters - # nested sidebar title when duplicated under main one
-# st.sidebar.title('Filters') 
+# st.sidebar.title('Filters')
 # regions = st.sidebar.multiselect('Select Region', df['Region'].unique(), default=df['Region'].unique())
 # products = st.sidebar.multiselect('Select Product', df['Product'].unique(), default=df['Product'].unique())
 
@@ -183,7 +194,8 @@ with col1:
     uploaded_file = st.file_uploader(
         "Step 1: Upload a CSV file.",
         type=["csv"],
-        help="Double check that your CSV file is formatted correctly with accepted latitude and longitude columns.")
+        help="Double check that your CSV file is formatted correctly with accepted latitude and longitude columns.",
+    )
     markdown = """
                 Accepted names for uploaded CSV file: \n
                 | **CSV Columns** | **Accepted Names**                                |
@@ -191,7 +203,7 @@ with col1:
                 | latitude        | lat, latitude, y, LAT, Latitude, Lat, Y                |
                 | longitude       | log, long, longitude, x, LON, Longitude, Long, X  |
                 | plot ID         | id, ID, plot_ID, plot_id, plotID, plotId          |
-                
+
                 [Example file](https://raw.githubusercontent.com/taraskiba/streamlit-skiba/refs/heads/main/sample_data/coordinate-point-formatting.csv)
                 """
     st.markdown(markdown)
@@ -202,23 +214,25 @@ with col2:
     data = response.json()
 
     data_dict = {item["id"]: item["url"] for item in data if "id" in item}
-    df = pd.DataFrame(list(data_dict.items()), columns=['id', 'url'])
-    geedata = st.selectbox('Step 2: Select a GEE dataset', df['id'])
+    df = pd.DataFrame(list(data_dict.items()), columns=["id", "url"])
+    geedata = st.selectbox("Step 2: Select a GEE dataset", df["id"])
     url = data_dict.get(str(geedata))
-    st.write('Image and ImageCollections only!')
-    st.write('Dataset ID:', url)
+    st.write("Image and ImageCollections only!")
+    st.write("Dataset ID:", url)
     geedata = str(geedata)
     geedata_stripped = geedata.strip()
     file_name = geedata_stripped.replace("/", "_")
-    st.write('Your file will be downloaded under the following name:', file_name,'.csv')
+    st.write(
+        "Your file will be downloaded under the following name:", file_name, ".csv"
+    )
 
 # Second row
 col1, col2, col3 = st.columns(3)
 with col1:
-    start_date = st.date_input('(Optional) Start Date', value=None)
+    start_date = st.date_input("(Optional) Start Date", value=None)
 
 with col2:
-    end_date = st.date_input('(Optional) End Date', value=None)
+    end_date = st.date_input("(Optional) End Date", value=None)
 
 with col3:
     st.button("Reset", type="primary")
@@ -227,9 +241,18 @@ with col3:
             file_info = uploaded_file.getvalue()
             points = pd.read_csv(io.BytesIO(file_info))
 
-            lat_cols = ['lat', 'latitude', 'y', 'LAT', 'Latitude', 'Lat', 'Y']
-            lon_cols = ['lon', 'long', 'longitude', 'x', 'LON', 'Longitude', 'Long', 'X']
-            id_cols = ['id', 'ID', 'plot_ID', 'plot_id', 'plotID', 'plotId']
+            lat_cols = ["lat", "latitude", "y", "LAT", "Latitude", "Lat", "Y"]
+            lon_cols = [
+                "lon",
+                "long",
+                "longitude",
+                "x",
+                "LON",
+                "Longitude",
+                "Long",
+                "X",
+            ]
+            id_cols = ["id", "ID", "plot_ID", "plot_id", "plotID", "plotId"]
 
             def find_column(possible_names, columns):
                 for name in possible_names:
@@ -246,30 +269,37 @@ with col3:
             lon_col = find_column(lon_cols, points.columns)
             id_col = find_column(id_cols, points.columns)
 
-            points = points.rename(columns={lat_col: 'LAT', lon_col: 'LON', id_col: 'plot_ID'})
+            points = points.rename(
+                columns={lat_col: "LAT", lon_col: "LON", id_col: "plot_ID"}
+            )
 
             if not geedata:
                 st.error("Please ensure all fields are filled out correctly.")
             else:
-                # convert date/time: pd.to_datetime('2024-12-31') 
+                # convert date/time: pd.to_datetime('2024-12-31')
                 returned_dataset = get_coordinate_data(
-                    data=points, geedata=geedata, start_date=start_date, end_date=end_date
+                    data=points,
+                    geedata=geedata,
+                    start_date=start_date,
+                    end_date=end_date,
                 )
-                
+
                 returned_csv = convert_df(returned_dataset)
 
                 if returned_csv:
-                    st.success("Data extraction complete! You can download the results.")
+                    st.success(
+                        "Data extraction complete! You can download the results."
+                    )
                     st.download_button(
                         label="Download Results",
                         data=returned_csv,
                         mime="text/csv",
-                        file_name=f"{file_name}.csv"
+                        file_name=f"{file_name}.csv",
                     )
                 else:
-                    st.error("No data extracted. Please check your inputs and try again.")
-                    
+                    st.error(
+                        "No data extracted. Please check your inputs and try again."
+                    )
+
         else:
-            st.error("Please upload a CSV file with LAT and LONG columns.")    
-        
-     
+            st.error("Please upload a CSV file with LAT and LONG columns.")

@@ -1,6 +1,5 @@
 import streamlit as st
 
-
 st.set_page_config(layout="wide")
 
 # Customize the sidebar
@@ -37,8 +36,8 @@ st.markdown(markdown)
 
 st.subheader("Common Issues")
 markdown = """
-**File formatting**: please make sure that your file is formatted in an accepted way. Common issues include 
-* unaccepted column names 
+**File formatting**: please make sure that your file is formatted in an accepted way. Common issues include
+* unaccepted column names
 * more than just the three neccessary columns
 * problems during file conversions (make sure end of csv file does not have extra commas)
 * incorrect coordinate formatting (must be in dd.)
