@@ -124,7 +124,7 @@ def load_gee_as_image(dataset_id, start_date, end_date, **kwargs):
     elif data_str == "image_collection":
         col = ee.ImageCollection(dataset_id)
         # If date filters are provided, apply them
-        if start_date is None and end_date is None:
+        if start_date is not None and end_date is not None:
             col = col.filterDate(start_date, end_date)
         else:
             pass
@@ -134,7 +134,7 @@ def load_gee_as_image(dataset_id, start_date, end_date, **kwargs):
     # Try loading as FeatureCollection (convert to raster)
     else:
         fc_temp = ee.FeatureCollection(dataset_id)
-        if start_date is None and end_date is None:
+        if start_date is not None and end_date is not None:
                 fc_temp = fc_temp.filterDate(start_date, end_date)
         # Convert to raster: burn a value of 1 into a new image
         img = fc_temp.reduceToImage(properties=[], reducer=ee.Reducer.median())
