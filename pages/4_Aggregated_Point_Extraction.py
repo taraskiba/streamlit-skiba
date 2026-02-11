@@ -137,6 +137,8 @@ def load_gee_as_image(dataset_id, start_date, end_date, **kwargs):
         fc_temp = ee.FeatureCollection(dataset_id)
         if start_date is not None and end_date is not None:
                 fc_temp = fc_temp.filterDate(start_date, end_date)
+        else:
+            pass
         # Convert to raster: burn a value of 1 into a new image
         img = fc_temp.reduceToImage(properties=[], reducer=ee.Reducer.median())
         img.getInfo()
