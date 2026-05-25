@@ -9,85 +9,88 @@ import json
 from shapely.geometry import Point
 import shapely
 
+
 # Define functions
 @st.cache_data(hash_funcs={shapely.geometry.Point: lambda p: p.wkb})
 def create_obfuscated_point(point, radius, _crs="EPSG:4326"):
-        """
-        Create a circle polygon (as a shapely geometry) with the given radius in feet,
-        where the provided point is randomly located inside the circle (not at the center).
-        """
-        # Convert radius from feet to meters
-        radius = radius * 0.3048
+    """
+    Create a circle polygon (as a shapely geometry) with the given radius in feet,
+    where the provided point is randomly located inside the circle (not at the center).
+    """
+    # Convert radius from feet to meters
+    radius = radius * 0.3048
 
-        # Project to local UTM for accurate distance calculations
-        utm_crs = f"EPSG:326{int((point.x + 180) // 6) + 1}"
-        transformer_to_utm = Transformer.from_crs(_crs, utm_crs, always_xy=True)
-        transformer_to_latlon = Transformer.from_crs(utm_crs, _crs, always_xy=True)
-        x, y = transformer_to_utm.transform(point.x, point.y)
+    # Project to local UTM for accurate distance calculations
+    utm_crs = f"EPSG:326{int((point.x + 180) // 6) + 1}"
+    transformer_to_utm = Transformer.from_crs(_crs, utm_crs, always_xy=True)
+    transformer_to_latlon = Transformer.from_crs(utm_crs, _crs, always_xy=True)
+    x, y = transformer_to_utm.transform(point.x, point.y)
 
-        # Randomize the point's location within the circle
-        angle = np.random.uniform(0, 2 * np.pi)
-        distance = np.random.uniform(0, radius)
-        # Calculate center of the circle so that the point is inside the circle but not at the center
-        center_x = x - distance * np.cos(angle)
-        center_y = y - distance * np.sin(angle)
-        center = Point(center_x, center_y)
+    # Randomize the point's location within the circle
+    angle = np.random.uniform(0, 2 * np.pi)
+    distance = np.random.uniform(0, radius)
+    # Calculate center of the circle so that the point is inside the circle but not at the center
+    center_x = x - distance * np.cos(angle)
+    center_y = y - distance * np.sin(angle)
+    center = Point(center_x, center_y)
 
-        # Transform the circle back to WGS84
-        center_latlon = shapely.ops.transform(
-            lambda x, y: transformer_to_latlon.transform(x, y), center
-        )
-        return center_latlon
-       
+    # Transform the circle back to WGS84
+    center_latlon = shapely.ops.transform(
+        lambda x, y: transformer_to_latlon.transform(x, y), center
+    )
+    return center_latlon
+
 
 @st.cache_data(hash_funcs={shapely.geometry.Point: lambda p: p.wkb})
 def obfuscate_points(data, radius, plot_id_col):
-        """
-        Obfuscate points within a radius and save as csv.
+    """
+    Obfuscate points within a radius and save as csv.
 
-        Args:
-            data (str, pd.DataFrame, gpd.GeoDataFrame): Input data (GeoJSON, DataFrame, or GeoDataFrame).
-            radius (float): Radius of the circle in meters.
-            plot_id_col (str): Column name for plot IDs.
-            output_file (str): Path to save the output GeoJSON file.
-        """
-        if isinstance(data, str):
-            coordinates = pd.read_csv(data)
-            gdf = gpd.GeoDataFrame(
-                coordinates,
-                geometry=gpd.points_from_xy(coordinates.LON, coordinates.LAT),
-                crs="EPSG:4326",  # Directly set CRS during creation
-            )
-        elif isinstance(data, pd.DataFrame):
-            coordinates = data
-            gdf = gpd.GeoDataFrame(
-                coordinates,
-                geometry=gpd.points_from_xy(coordinates.LON, coordinates.LAT),
-                crs="EPSG:4326",  # Directly set CRS during creation
-            )
-        else:
-            gdf = data.to_crs(epsg=4326)  # Ensure WGS84
+    Args:
+        data (str, pd.DataFrame, gpd.GeoDataFrame): Input data (GeoJSON, DataFrame, or GeoDataFrame).
+        radius (float): Radius of the circle in meters.
+        plot_id_col (str): Column name for plot IDs.
+        output_file (str): Path to save the output GeoJSON file.
+    """
+    if isinstance(data, str):
+        coordinates = pd.read_csv(data)
+        gdf = gpd.GeoDataFrame(
+            coordinates,
+            geometry=gpd.points_from_xy(coordinates.LON, coordinates.LAT),
+            crs="EPSG:4326",  # Directly set CRS during creation
+        )
+    elif isinstance(data, pd.DataFrame):
+        coordinates = data
+        gdf = gpd.GeoDataFrame(
+            coordinates,
+            geometry=gpd.points_from_xy(coordinates.LON, coordinates.LAT),
+            crs="EPSG:4326",  # Directly set CRS during creation
+        )
+    else:
+        gdf = data.to_crs(epsg=4326)  # Ensure WGS84
 
-        centers = []
-        ids = []
-        for idx, row in gdf.iterrows():
-            point = row["geometry"]
-            center = create_obfuscated_point(point, radius, _crs=gdf.crs)
-            centers.append(center)
-            ids.append(row[plot_id_col])
-            # Create new GeoDataFrame
-        df = pd.DataFrame({plot_id_col: ids,
-            'lat': [p.y for p in centers],
-            'lon': [p.x for p in centers]})
-        
-        return df
+    centers = []
+    ids = []
+    for idx, row in gdf.iterrows():
+        point = row["geometry"]
+        center = create_obfuscated_point(point, radius, _crs=gdf.crs)
+        centers.append(center)
+        ids.append(row[plot_id_col])
+        # Create new GeoDataFrame
+    df = pd.DataFrame(
+        {plot_id_col: ids, "lat": [p.y for p in centers], "lon": [p.x for p in centers]}
+    )
+
+    return df
+
 
 @st.cache_data
 def convert_for_download(df):
     return df.to_csv().encode("utf-8")
 
+
 # Beginning of web app development
-st.set_page_config(page_title='Extract GEE Data from Coordinates', layout='wide')
+st.set_page_config(page_title="Extract GEE Data from Coordinates", layout="wide")
 
 # Customize the sidebar
 markdown = """
@@ -105,7 +108,7 @@ st.title("Buffer Coordinates to A Single Obfuscated Point")
 st.header("Optional Preliminary Step to Point Extraction Module.")
 
 # Sidebar filters - # nested sidebar title when duplicated under main one
-# st.sidebar.title('Filters') 
+# st.sidebar.title('Filters')
 # regions = st.sidebar.multiselect('Select Region', df['Region'].unique(), default=df['Region'].unique())
 # products = st.sidebar.multiselect('Select Product', df['Product'].unique(), default=df['Product'].unique())
 
@@ -122,17 +125,21 @@ with col1:
     data = response.json()
 
     data_dict = {item["id"]: item["url"] for item in data if "id" in item}
-    df = pd.DataFrame(list(data_dict.items()), columns=['id', 'url'])
-    geedata = st.selectbox('Optional: check resolution of Google Earth Engine dataset to determine appropriate buffer area.', df['id'])
+    df = pd.DataFrame(list(data_dict.items()), columns=["id", "url"])
+    geedata = st.selectbox(
+        "Optional: check resolution of Google Earth Engine dataset to determine appropriate buffer area.",
+        df["id"],
+    )
     url = data_dict.get(str(geedata))
 
-    st.write('Dataset ID:', url)
-    
+    st.write("Dataset ID:", url)
+
 with col2:
     uploaded_file = st.file_uploader(
         "Step 1: Upload a CSV file.",
         type=["csv"],
-        help="Double check that your CSV file is formatted correctly with LAT and LONG columns.")
+        help="Double check that your CSV file is formatted correctly with LAT and LONG columns.",
+    )
     markdown = """
                 Accepted names for uploaded CSV file: \n
                 | **CSV Columns** | **Accepted Names**                                |
@@ -148,7 +155,13 @@ with col2:
 # Second row
 col1, col2 = st.columns(2)
 with col1:
-    buffer_distance = st.number_input('Step 2: Buffer Distance (in ft)', min_value=0, value=1000, step=1, key='buffer_distance)')
+    buffer_distance = st.number_input(
+        "Step 2: Buffer Distance (in ft)",
+        min_value=0,
+        value=1000,
+        step=1,
+        key="buffer_distance)",
+    )
 
 with col2:
     st.button("Reset", type="primary")
@@ -157,9 +170,18 @@ with col2:
             file_info = uploaded_file.getvalue()
             points = pd.read_csv(io.BytesIO(file_info))
 
-            lat_cols = ['lat', 'latitude', 'y', 'LAT', 'Latitude', 'Lat','Y']
-            lon_cols = ['lon', 'long', 'longitude', 'x', 'LON', 'Longitude', 'Long', 'X']
-            id_cols = ['id', 'ID', 'plot_ID', 'plot_id', 'plotID', 'plotId']
+            lat_cols = ["lat", "latitude", "y", "LAT", "Latitude", "Lat", "Y"]
+            lon_cols = [
+                "lon",
+                "long",
+                "longitude",
+                "x",
+                "LON",
+                "Longitude",
+                "Long",
+                "X",
+            ]
+            id_cols = ["id", "ID", "plot_ID", "plot_id", "plotID", "plotId"]
 
             def find_column(possible_names, columns):
                 for name in possible_names:
@@ -171,37 +193,37 @@ with col2:
                     if name.lower() in lower_columns:
                         return lower_columns[name.lower()]
                 raise ValueError(f"No matching column found for {possible_names}")
-            
+
             lat_col = find_column(lat_cols, points.columns)
             lon_col = find_column(lon_cols, points.columns)
             id_col = find_column(id_cols, points.columns)
 
-            points = points.rename(columns={lat_col: 'LAT', lon_col: 'LON', id_col: 'plot_ID'})
-        
+            points = points.rename(
+                columns={lat_col: "LAT", lon_col: "LON", id_col: "plot_ID"}
+            )
+
             if not geedata:
                 st.error("Please ensure all fields are filled out correctly.")
             else:
-                # convert date/time: pd.to_datetime('2024-12-31') 
+                # convert date/time: pd.to_datetime('2024-12-31')
                 returned_df = obfuscate_points(
-                    data=points,
-                    radius=buffer_distance,
-                    plot_id_col="plot_ID"
+                    data=points, radius=buffer_distance, plot_id_col="plot_ID"
                 )
                 file_name = f"buffered_coordinates_{buffer_distance}ft.csv"
 
                 csv = convert_for_download(returned_df)
 
                 if csv:
-                    st.success("Data extraction complete! You can download the results.")
+                    st.success(
+                        "Data extraction complete! You can download the results."
+                    )
                     st.download_button(
-                        label="Download Results",
-                        data=csv,
-                        file_name=file_name
+                        label="Download Results", data=csv, file_name=file_name
                     )
                 else:
-                    st.error("No data extracted. Please check your inputs and try again.")
-                    
+                    st.error(
+                        "No data extracted. Please check your inputs and try again."
+                    )
+
         else:
-            st.error("Please upload a CSV file with LAT and LONG columns.")    
-        
-    
+            st.error("Please upload a CSV file with LAT and LONG columns.")
