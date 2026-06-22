@@ -31,7 +31,7 @@ def create_obfuscated_points(point, radius, no_samp, _crs="EPSG:4326"):
         for no in range(no_samp):   
             # Randomize the point's location within the circle
             angle = np.random.uniform(0, 2 * np.pi)
-            distance = np.random.uniform(0, radius_m)
+            distance = np.random.uniform(0, 1)*radius_m  # Random distance from the center, scaled by radius
             # Calculate center of the circle so that the point is inside the circle but not at the center
             center_x = x - distance * np.cos(angle)
             center_y = y - distance * np.sin(angle)
